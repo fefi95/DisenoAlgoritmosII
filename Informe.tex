@@ -1,0 +1,102 @@
+\documentclass{ci5652}
+\usepackage{graphicx,amssymb,amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{subfigure}
+\usepackage{paralist}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+%-------------------------- Macros and Definitions ----------------------------%
+
+% Add all additional macros here, do NOT include any additional files.
+
+% The environments theorem (Theorem), invar (Invariant), lemma (Lemma),
+% cor (Corollary), obs (Observation), conj (Conjecture), and prop
+% (Proposition) are already defined in the ci5652.cls file.
+
+%--------------------------- Title -------------------------------------------%
+
+\title{Metaheurísticas para el problema de Aprendizaje de Pesos en Características}
+
+\author{Stefani Castellanos
+        \and
+        Erick Silva}
+
+%--------------------------------- Text --------------------------------------%
+
+\begin{document}
+\thispagestyle{empty}
+\maketitle
+
+\begin{abstract}
+*Inserte una descripción breve del paper.*
+\end{abstract}
+
+\section*{Introducción}
+*Inserte introducción*
+
+\section{Descripción del problema}
+*Inserte descripción*
+
+\subsection{Representación}
+*Inserte representación*
+
+\subsection{Función objetivo}
+*Inserte Función objetivo*
+
+\section{Implementación}
+*Inserte Implementación*
+
+\section{Resultados}
+*Inserte Resultados*
+
+\section*{Conclusiones}
+
+Aquí concluyen.
+
+%------------------------------ Bibliography ---------------------------------%
+
+% Please add the contents of the .bbl file that you generate,  or add bibitem entries manually if you like.
+% The entries should be in alphabetical order
+\small
+\bibliographystyle{abbrv}
+
+\begin{thebibliography}{99}
+
+\bibitem{so2005}
+C. So and H. So.
+\newblock A groundbreaking result.
+\newblock {\em Journal of Everything}, 59(2):23--37, 2005.
+
+\end{thebibliography}
+
+
+\newpage
+\section*{Apéndice}
+
+Bla.
+
+%------------------------ EL EJEMPLO DE LA PROFE -----------------------------%
+
+\section{La sección de ejemplo de la profe}
+Citan así~\cite{so2005}. ELIMINAR AL ESCRIBIR EL INFORME
+
+\begin{algorithm}
+ \DontPrintSemicolon
+ \vspace*{0.1cm}
+ \KwIn{Descripcion}
+ \KwOut{Descripcion}
+ Primer paso\;
+ Segundo\;
+ \ForEach{$i = 1\dots n$}{
+  \If{Alguna condición}{
+   Algo aqui\;
+   }
+ }
+ \KwRet{Valor}
+ \vspace*{0.1cm}
+ \caption{Nombre}
+\end{algorithm}
+
+\end{document}
