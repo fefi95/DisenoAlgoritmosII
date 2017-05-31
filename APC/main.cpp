@@ -6,10 +6,10 @@
  *
  *  Functions for reading the dataset
  */
- 
+
 #include "reader.hpp"
 
 int main(int argc, char const *argv[]) {
-    readFile("datasets/iris/iris.data", 5);
+    readFile("datasets/iris/iris.data");
     return 0;
 }
