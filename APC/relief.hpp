@@ -105,30 +105,29 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
         }
 
         // Update feature weight vector
-
         double nearFriendDiff; // Difference between nearest friend and the
                                // i-th instance
         double nearEnemyDiff;  // Difference between nearest enemy and the
                                // i-th instance
         maxWeight = -INFINITY;
-        cout << "[ ";
+        // cout << "[ ";
         for (int j = 0; j < nFeatures; ++j) {
             // The nearest friend is dsFeatures[nearFriendIndex]
             nearFriendDiff = pow(dsFeatures[nearFriendIndex][j] - dsFeatures[i][j], 2.0);
             // The nearest enemy is dsFeatures[nearEnemyIndex];
             nearEnemyDiff  = pow(dsFeatures[nearEnemyIndex][j]  - dsFeatures[i][j], 2.0);
             fWeight[j] = fWeight[j] - nearFriendDiff + nearEnemyDiff;
-            cout << fWeight[j] << ", ";
+            // cout << fWeight[j] << ", ";
 
             if (maxWeight < fWeight[j]) {
                 maxWeight = fWeight[j];
             }
         }
-        cout << "]" << endl;
+        // cout << "]" << endl;
     }
 
     // Normalize feature vector
-    cout << "[ ";
+    cout << "feature weight vector = [ ";
     for(int j = 0; j < nFeatures; ++j) {
         if (fWeight[j] < 0.0) {
             fWeight[j] = 0.0;
