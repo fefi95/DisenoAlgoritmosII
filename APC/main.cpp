@@ -8,8 +8,10 @@
  */
 
 #include "reader.hpp"
+#include "relief.hpp"
 
 int main(int argc, char const *argv[]) {
-    readFile("datasets/iris/iris.data");
+    std::pair < vector <vector <string> >, vector <string> > dataset = readFile("datasets/iris/iris.data");
+    relief(dataset);
     return 0;
 }

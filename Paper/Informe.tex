@@ -1,11 +1,12 @@
 \documentclass{ci5652}
 \usepackage{graphicx,amssymb,amsmath}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+% \usepackage[spanish]{babel}
 \usepackage{hyperref}
 \usepackage{subfigure}
 \usepackage{paralist}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{csvsimple}
 
 %-------------------------- Macros and Definitions ----------------------------%
 
@@ -26,7 +27,7 @@
 %--------------------------------- Text --------------------------------------%
 
 \begin{document}
-\thispagestyle{empty}
+% \thispagestyle{empty}
 \maketitle
 
 \begin{abstract}
@@ -35,6 +36,8 @@
 
 \section*{Introducción}
 *Inserte introducción*
+
+% \csvreader[autotabular]{grade.csv}{}{\csvlinetotablerow}%
 
 \section{Descripción del problema}
 *Inserte descripción*
