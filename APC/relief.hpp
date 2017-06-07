@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <vector>
+#include "dataset.hpp"
 using namespace std;
 
 /**
@@ -46,22 +47,9 @@ double distance(vector<double> inst1, vector<double> inst2, int nFeatures) {
  * @return : feature weights vector for the training set
  */
 
-std:: vector<double> relief(std::pair < vector <vector <string> >, vector <string> > trainingSet) {
-    int nFeatures = 0;
-    int nInstances = 0;
-
-    std:: vector< vector <double> > dsFeatures;
-
-    for (std::vector< vector <string> >::iterator inst = trainingSet.first.begin(); inst != trainingSet.first.end(); ++inst) {
-        std:: vector<double> fVector;
-        nFeatures = 0;
-        for (std::vector <string>::iterator value = inst -> begin(); value != inst -> end(); ++value) {
-            ++nFeatures;
-            fVector.push_back(stod(*value));
-        }
-        dsFeatures.push_back(fVector);
-        ++nInstances;
-    }
+std:: vector<double> relief(DataSet trainingSet) {
+    int nFeatures = trainingSet.nFeatures;
+    int nInstances = trainingSet.nInstances;
 
     // Initialize feature weight vector to 0
     std::vector<double> fWeight(nFeatures, 0.0); // Feature weight
@@ -85,8 +73,8 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
 
             // Find nearest friend
             // If both instances belong to the same class
-            if (trainingSet.second[j] == trainingSet.second[i] && j != i) {
-                dist = distance(dsFeatures[i], dsFeatures[j], nFeatures);
+            if (trainingSet.result[j] == trainingSet.result[i] && j != i) {
+                dist = distance(trainingSet.instances[i], trainingSet.instances[j], nFeatures);
                 if (dist < nearFriendDist) {
                     nearFriendDist  = dist;
                     nearFriendIndex = j;
@@ -95,8 +83,8 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
 
             // Find nearest enemy
             // If instances belong to different classes
-            if (trainingSet.second[j] != trainingSet.second[i]) {
-                dist = distance(dsFeatures[i], dsFeatures[j], nFeatures);
+            if (trainingSet.result[j] != trainingSet.result[i]) {
+                dist = distance(trainingSet.instances[i], trainingSet.instances[j], nFeatures);
                 if (dist < nearEnemyDist) {
                     nearEnemyDist  = dist;
                     nearEnemyIndex = j;
@@ -112,10 +100,10 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
         maxWeight = -INFINITY;
         // cout << "[ ";
         for (int j = 0; j < nFeatures; ++j) {
-            // The nearest friend is dsFeatures[nearFriendIndex]
-            nearFriendDiff = pow(dsFeatures[nearFriendIndex][j] - dsFeatures[i][j], 2.0);
-            // The nearest enemy is dsFeatures[nearEnemyIndex];
-            nearEnemyDiff  = pow(dsFeatures[nearEnemyIndex][j]  - dsFeatures[i][j], 2.0);
+            // The nearest friend is trainingSet.instances[nearFriendIndex]
+            nearFriendDiff = pow(trainingSet.instances[nearFriendIndex][j] - trainingSet.instances[i][j], 2.0);
+            // The nearest enemy is trainingSet.instances[nearEnemyIndex];
+            nearEnemyDiff  = pow(trainingSet.instances[nearEnemyIndex][j]  - trainingSet.instances[i][j], 2.0);
             fWeight[j] = fWeight[j] - nearFriendDiff + nearEnemyDiff;
             // cout << fWeight[j] << ", ";
 

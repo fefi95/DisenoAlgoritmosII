@@ -7,11 +7,11 @@
  *  Functions for reading the dataset
  */
 
-#include "reader.hpp"
+#include "dataset.hpp"
 #include "relief.hpp"
 
 int main(int argc, char const *argv[]) {
-    std::pair < vector <vector <string> >, vector <string> > dataset = readFile("datasets/iris/iris.data");
+    DataSet dataset = readFile("datasets/iris/iris.data");
     relief(dataset);
     return 0;
 }
