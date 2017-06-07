@@ -65,8 +65,8 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
 
     // Initialize feature weight vector to 0
     std::vector<double> fWeight(nFeatures, 0.0); // Feature weight
-    double dist = 0;       // Distance of one instance to another (euclidean)
-    double maxWeight;      // Feature's weights vector max value
+    double dist = 0;              // Distance of one instance to another (euclidean)
+    double maxWeight = -INFINITY; // Feature's weights vector max value
 
     double nearFriendDist; // Distance to nearest friend
     int nearFriendIndex;   // Instance's position of nearest friend
@@ -104,19 +104,20 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
             }
         }
 
-        // nearestFriend = dsFeatures[nearFriendIndex];
-        // nearestEnemy = dsFeatures[nearEnemyIndex];
+        // Update feature weight vector
 
-        //Update feature weight vector
-        double nearFriendDiff;
-        double nearEnemyDiff;
+        double nearFriendDiff; // Difference between nearest friend and the
+                               // i-th instance
+        double nearEnemyDiff;  // Difference between nearest enemy and the
+                               // i-th instance
         maxWeight = -INFINITY;
         cout << "[ ";
         for (int j = 0; j < nFeatures; ++j) {
-
-            nearFriendDiff = pow(dsFeatures[nearFriendIndex][j] - fWeight[j], 2.0);
-            nearEnemyDiff  = pow(dsFeatures[nearEnemyIndex][j]  - fWeight[j], 2.0);
-            fWeight[j] = fWeight[j] - nearFriendDiff + nearEnemyDiff ;
+            // The nearest friend is dsFeatures[nearFriendIndex]
+            nearFriendDiff = pow(dsFeatures[nearFriendIndex][j] - dsFeatures[i][j], 2.0);
+            // The nearest enemy is dsFeatures[nearEnemyIndex];
+            nearEnemyDiff  = pow(dsFeatures[nearEnemyIndex][j]  - dsFeatures[i][j], 2.0);
+            fWeight[j] = fWeight[j] - nearFriendDiff + nearEnemyDiff;
             cout << fWeight[j] << ", ";
 
             if (maxWeight < fWeight[j]) {
@@ -124,19 +125,20 @@ std:: vector<double> relief(std::pair < vector <vector <string> >, vector <strin
             }
         }
         cout << "]" << endl;
-        // cout << "[ ";
-        // // Normalize feature vector
-        // for(int j = 0; j < nFeatures; ++j) {
-        //     if (fWeight[j] < 0.0) {
-        //         fWeight[j] = 0.0;
-        //     }
-        //     else {
-        //         fWeight[j] = fWeight[j]/maxWeight;
-        //     }
-        //     cout << fWeight[j] << ", ";
-        // }
-        // cout << "]" << endl;
     }
+
+    // Normalize feature vector
+    cout << "[ ";
+    for(int j = 0; j < nFeatures; ++j) {
+        if (fWeight[j] < 0.0) {
+            fWeight[j] = 0.0;
+        }
+        else {
+            fWeight[j] = fWeight[j]/maxWeight;
+        }
+        cout << fWeight[j] << ", ";
+    }
+    cout << "]" << endl;
     return fWeight;
 }
 
