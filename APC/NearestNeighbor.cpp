@@ -19,10 +19,9 @@
 using namespace std;
 
 
-
 /**
  * Function that calculates the euclidean distance between 2 vectors
- *  (taking them as an array)
+ *  with assigned weights for each component (taking them as an array)
  *
  * @params inst1     : Vector 1 of the dataset
  * @params inst2     : Vector 2 of the dataset
@@ -31,10 +30,10 @@ using namespace std;
  * @return : euclidean distance between the two vectors.
  */
 
-double distance(vector<double> inst1, vector<double> inst2, int nFeatures) {
+double weightedDistance(vector<double> inst1, vector<double> inst2, int nFeatures, vector<double> const &weights) {
     double dist = 0;
     for (int i = 0; i < nFeatures; ++i) {
-        dist = dist + pow(inst1[i] - inst2[i], 2.0);
+        dist = dist + pow(weights[i]*inst1[i] - inst2[i], 2.0);
     }
     dist = sqrt(dist);
     return dist;
@@ -52,7 +51,7 @@ double distance(vector<double> inst1, vector<double> inst2, int nFeatures) {
  *
  * @return : percentage of test set classified correctly.
  */
-long double NN1(DataSet trainingSet, DataSet testSet){
+double NN1(DataSet trainingSet, DataSet testSet, vector<double> const &weights){
     int nFeatures = trainingSet.nFeatures;
     int nTestInstances = testSet.nInstances;
     int nTrainInstances = trainingSet.nInstances;
@@ -66,8 +65,10 @@ long double NN1(DataSet trainingSet, DataSet testSet){
         minDistance = INFINITY;
         minDistancePos = 0;
         for (int j = 0; j < nTrainInstances; ++j){
-            currentDistance = distance(testSet.instances[i],
-                                        trainingSet.instances[j]);
+            currentDistance = weightedDistance(testSet.instances[i],
+                                                trainingSet.instances[j],
+                                                nFeatures,
+                                                weights);
             if (currentDistance < minDistance){
                 minDistance = currentDistance;
                 minDistancePos = j;
@@ -78,10 +79,10 @@ long double NN1(DataSet trainingSet, DataSet testSet){
         }
     }
     
-    double correctPercentage = (double)correctResults/(double)nTestInstances
+    double correctPercentage = (double)correctResults/(double)nTestInstances;
     correctPercentage = 100*correctPercentage;
 
-    return correctPercentage
+    return correctPercentage;
 }
 
 
