@@ -7,6 +7,7 @@
 \usepackage{paralist}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{csvsimple}
+\usepackage[none]{hyphenat}
 
 %-------------------------- Macros and Definitions ----------------------------%
 
@@ -35,15 +36,65 @@
 \end{abstract}
 
 \section*{Introducción}
-*Inserte introducción*
+% NO ESTÁ COMPLETO
+Debido a la gran cantidad de información manejada actualmente, ha surgido la
+necesidad de reducir el tamaño de dichos datos, sin embargo, esto genera el
+problema de escoger correctamente que información es relevante para el
+clasificador.\cite{Cano_2003} \\
+
+Reducir el tamaño de los datos es posible a través de los siguientes métodos:
+
+\begin{itemize}
+  \item Seleccionando características del conjunto de datos, lo que reduce el
+  tamaño de las columnas.
+  \item Eliminando las instancias del conjunto de datos que aporte poca
+  información.
+  \item Determinando la importancia de las características, ya que proporciona
+  información que permite guiar al clasificador y así, reducir el tiempo de
+  procesamiento.
+\end{itemize}
+
+Este trabajo se enfocará en esta última, denominado el problema de \textit{Aprendizaje
+de Pesos en Características}. Se utilizará un algoritmo \textit{greedy} (ávido)
+denomindado RELIEF, dos metaheurísticas de trayectoría y dos poblacionales,
+para finalmente compararlas y determinar cual de ellos es más adecuado para el
+problema.
 
 % \csvreader[autotabular]{grade.csv}{}{\csvlinetotablerow}%
 
 \section{Descripción del problema}
-*Inserte descripción*
 
-\subsection{Representación}
-*Inserte representación*
+Antes de describir el problema APC, es necesario comprender en qué consiste
+un problema de clasificación; se dispone de un conjunto de posibles clases
+($C$) y un conjunto de datos ($X$), en donde una instancia $x_i$ es un vector
+previamente clasificado y de la forma:
+$$x_i = \langle f_1, f_2, ..., f_n, c\rangle $$ en donde:
+
+\begin{itemize}
+  \item $f_i$ : el valor de cada característica.
+  \item $n$ : la cantidad de característcas.
+  \item $c$ : la clase a la que pertenece dicha instancia, con $c \in C$.
+\end{itemize}
+
+Es común particionar $X$ en dos subconjuntos que representen el conjunto de
+entrenamiento y el de prueba, $Xe$ y $Xp$ respectivamente, de manera que $Xe$
+pueda ser utilizado para que el algoritmo aprenda los parámetros que le
+permitan clasificar correctamente todas sus instancias y utilizar $Xp$ para
+validar los resultados obtenidos.\\
+
+El problema del APC consiste en optimizar el rendimiento de un clasificador
+a partir de la inclusión de pesos asociados a las características del problema
+que ponderan la relevancia de cada una de ellas en el problema de aprendizaje y
+modifican su valor en el momento de calcular las distancias entre ejemplos. En
+este caso, el clasificador considerado será el \textit{K-Nearest Neighbor}
+(K-vecinos más cercanos) con $K=1$ (1-NN).\\
+
+El algoritmo K-NN asume que todas las instancias corresponden a puntos en un
+espacio $n$-dimensional ($\Re^n$), en donde $n$ es la cantidad de
+características del conjunto de datos. El vecino más cercano de una instancia
+está definido en términos de la distancia Euclideana y el algoritmo determina
+que los k vecinos cercanos pertenecen a la clase más común de ellos.
+\cite{Mitchell_1997}
 
 \subsection{Función objetivo}
 *Inserte Función objetivo*
@@ -58,10 +109,10 @@ w_i = [0, 1] \ \ 1 \leq i \leq n
 \]
 donde:
 \begin{itemize}
-  \item $W = (w_1, …, w_n)$ es una solución al problema que consiste en un vector de
-  números reales de tamaño n que define el peso que pondera a cada una de las
-  características f
-  \item 1-NN es el clasificador k-NN con k=1 vecino generado a partir del conjunto de
+  \item $W = \langle w_1, ..., w_n\rangle$ es una solución al problema que
+  consiste en un vector de números reales de tamaño $n$ que define el peso que
+  pondera a cada una de las características f.
+  \item 1-NN es el clasificador k-NN con $k=1$ vecinos generado a partir del conjunto de
   datos inicial, utilizando la técnica de validación leave-one-out y los pesos en W
   que se asocian a las n características.
   \item T es el conjunto de datos sobre el que se evalúa el clasificador, ya sea el
@@ -69,6 +120,23 @@ donde:
   \item $aciertos$ = nº de instancias bien clasificadas de T
   \item $total$ =  nº de total de instancias de T
 \end{itemize}
+
+\subsection{Representación}
+*Inserte representación*
+
+\section{Conjunto de datos}
+*Inserte descripción del conjunto de datos a utilizar*
+
+\section{Clasificador}
+
+\section{Algortimo RELIEF}
+
+
+\section{Metaheurísticas}
+\subsection{Metaheurísticas de trayectoria}
+\subsubsection{Enfriamiento Simulado (Simulated annealing)}
+\subsubsection{Búsqueda Local Iterada (Iterated Local Search)}
+\subsection{Metaheurísticas poblacional}
 
 \section{Implementación}
 *Inserte Implementación*
@@ -89,8 +157,19 @@ Aquí concluyen.
 
 \begin{thebibliography}{99}
 
+\bibitem{Cano_2003}
+Cano, J. Herrera, F. Lozano. M
+\newblock Using evolutionary algorithms as Instance Selection for data
+reduction in KDD: an experimental study.
+\newblock {\em IEEE Transaction on Evolutionary computation}, 2003.
+
+\bibitem{Mitchell_1997}
+Mitchell, T.
+\newblock Machine Learning.
+\newblock {\em From Book News, Inc}, 1997.
+
 \bibitem{so2005}
-C. So and H. So.
+EJEMPLO C. So and H. So.
 \newblock A groundbreaking result.
 \newblock {\em Journal of Everything}, 59(2):23--37, 2005.
 
