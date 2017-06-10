@@ -17,6 +17,8 @@
 #include <string>
 #include <stdlib.h>
 #include <vector>
+#include <algorithm>
+#include <random>
 using namespace std;
 
 /**
@@ -24,32 +26,108 @@ using namespace std;
  *
  */
 class DataSet {
-    public:
-        std::vector<vector <double> > instances;
-        std::vector< std::string > result;
-        int nInstances;
-        int nFeatures;
+public:
+    std::vector<vector <double> > instances;
+    std::vector< std::string > result;
+    int nInstances;
+    int nFeatures;
 
-        /**
-         * Constructor
-         *
-         * @params inst : Instances of the dataset
-         * @params res  : Class of every instances
-         * @params m    : Number of instances
-         * @params n    : Number of features
-         *
-         */
-        DataSet(std::vector<vector <double> > inst,
-                std::vector< std::string > res,
-                int m,
-                int n
-               ) {
-            instances = inst;
-            result = res;
-            nInstances = m;
-            nFeatures = n;
+    /**
+     * Constructor
+     *
+     * @params inst : Instances of the dataset
+     * @params res  : Class of every instances
+     * @params m    : Number of instances
+     * @params n    : Number of features
+     *
+     */
+    DataSet(std::vector<vector <double> > inst,
+            std::vector< std::string > res,
+            int m,
+            int n
+           ) {
+        instances = inst;
+        result = res;
+        nInstances = m;
+        nFeatures = n;
+    }
+
+    /**
+     * Function that makes a partition of the dataset
+     * given a percentage of the training set size.
+     * (i.e percentT = 0.6 makes a 60-40 partition.
+     *
+     * @params seed      : seed for random number generation
+     * @params percentT  : percentage of the trainig set's size.
+     *                     a number between [0, 1]
+     *
+     */
+    std::pair<DataSet, DataSet> makePartition(int seed, float percentT) {
+
+        // index vector for shuffleling
+        std::vector<int> index;
+        for (int i = 0; i < nInstances; ++i) {
+            index.push_back(i);
         }
+        std::shuffle(std::begin(index), std::end(index), std::default_random_engine(seed));
+
+        // PRINT
+        // TODO: remove print
+        // std::cout << "[";
+        // for (int i = 0; i < nInstances; ++i) {
+        //     std::cout << index[i] << ", ";
+        // }
+        // std::cout << "]" << std::endl;
+
+        // Trainning set
+        std::vector<vector <double> > instTrain;
+        std::vector< std::string > resTrain;
+        int nTrain = nInstances*percentT;
+        for (int i = 0; i < nTrain; ++i) {
+            instTrain.push_back(instances[index[i]]);
+            resTrain.push_back(result[index[i]]);
+        }
+        DataSet trainingSet(instTrain, resTrain, nTrain, nFeatures);
+        // trainingSet.print(cout);
+
+        // Test set
+        std::vector<vector <double> > instTest;
+        std::vector< std::string > resTest;
+        int nTest = nInstances - nInstances*percentT;
+        for (int i = nTrain; i < nTest + nTrain; ++i) {
+            instTest.push_back(instances[index[i]]);
+            resTest.push_back(result[index[i]]);
+        }
+        DataSet testSet(instTest, resTest, nTest, nFeatures);
+        // testSet.print(cout);
+
+        std::pair<DataSet, DataSet> dataset(trainingSet, testSet);
+        return dataset;
+    }
+
+    // Print
+    inline void print(std::ostream &os) const {
+
+        os << "Number of instances(examples): " << nInstances << std::endl;
+        os << "Number of features: " << nFeatures << std::endl;
+
+        for (int i = 0; i < nInstances; ++i) {
+            for (int j = 0; j < nFeatures; ++j) {
+                os << instances[i][j] << ", ";
+            }
+            os << result[i] << std::endl ;
+        }
+    }
 };
+
+/**
+ * Overriding << operator
+ *
+ */
+inline std::ostream& operator<<(std::ostream &os, const DataSet &dataset) {
+    dataset.print(os);
+    return os;
+}
 
 /**
  * Functions thar reads a file containing a dataset.

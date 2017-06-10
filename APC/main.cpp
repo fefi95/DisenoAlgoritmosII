@@ -12,6 +12,8 @@
 
 int main(int argc, char const *argv[]) {
     DataSet dataset = readFile("datasets/iris/iris.data");
-    relief(dataset);
+    std::pair<DataSet, DataSet> ds = dataset.makePartition(1, 0.6);
+    ds.first.print(cout);
+    relief(ds.first);
     return 0;
 }

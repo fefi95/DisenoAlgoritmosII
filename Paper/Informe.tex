@@ -48,6 +48,28 @@
 \subsection{Función objetivo}
 *Inserte Función objetivo*
 
+\begin{equation}
+    Max\ tasa\_clas(1\textit{-}NN(s)) = 100 \times \frac{aciertos}{total}
+\end{equation}
+
+sujeto a:
+\[
+w_i = [0, 1] \ \ 1 \leq i \leq n
+\]
+donde:
+\begin{itemize}
+  \item $W = (w_1, …, w_n)$ es una solución al problema que consiste en un vector de
+  números reales de tamaño n que define el peso que pondera a cada una de las
+  características f
+  \item 1-NN es el clasificador k-NN con k=1 vecino generado a partir del conjunto de
+  datos inicial, utilizando la técnica de validación leave-one-out y los pesos en W
+  que se asocian a las n características.
+  \item T es el conjunto de datos sobre el que se evalúa el clasificador, ya sea el
+  conjunto de entrenamiento como el de prueba.
+  \item $aciertos$ = nº de instancias bien clasificadas de T
+  \item $total$ =  nº de total de instancias de T
+\end{itemize}
+
 \section{Implementación}
 *Inserte Implementación*
 
