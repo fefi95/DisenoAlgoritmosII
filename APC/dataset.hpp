@@ -71,14 +71,6 @@ public:
         }
         std::shuffle(std::begin(index), std::end(index), std::default_random_engine(seed));
 
-        // PRINT
-        // TODO: remove print
-        // std::cout << "[";
-        // for (int i = 0; i < nInstances; ++i) {
-        //     std::cout << index[i] << ", ";
-        // }
-        // std::cout << "]" << std::endl;
-
         // Trainning set
         std::vector<vector <double> > instTrain;
         std::vector< std::string > resTrain;
@@ -121,7 +113,7 @@ public:
 };
 
 /**
- * Overriding << operator
+ * Overriding << operator for DataSet class
  *
  */
 inline std::ostream& operator<<(std::ostream &os, const DataSet &dataset) {
