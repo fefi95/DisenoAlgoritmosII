@@ -46,8 +46,6 @@ public:
 	APC_Instance(vector<double> init){
 		weights = init;
 	}
-
-	~APC_Instance();
 	
 
 	APC_Instance genNeighbor(){
@@ -103,7 +101,7 @@ public:
 			neighbors.push_back(APC_Instance(auxVect));
 		}
 
-		return neighbors
+		return neighbors;
 	}
 
 	double evaluate(DataSet trainingSet, DataSet testSet){
