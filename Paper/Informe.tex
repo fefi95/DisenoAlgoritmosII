@@ -60,7 +60,7 @@ denomindado RELIEF, dos metaheurísticas de trayectoría y dos poblacionales,
 para finalmente compararlas y determinar cual de ellos es más adecuado para el
 problema.
 
-% \csvreader[autotabular]{grade.csv}{}{\csvlinetotablerow}%
+% \csvreader[respect all, autotabular]{grade.csv}{}{\csvlinetotablerow}%
 
 \section{Descripción del problema}
 
@@ -142,7 +142,14 @@ donde:
 *Inserte Implementación*
 
 \section{Resultados}
-*Inserte Resultados*
+*Inserte Resultados*\\
+\csvreader[autotabular]{statistics/iris/relief.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[autotabular]{statistics/sonar/relief.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[autotabular]{statistics/spambase/relief.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[autotabular]{statistics/wdbc/relief.csv}{}{\csvlinetotablerow}%
 
 \section*{Conclusiones}
 

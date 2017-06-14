@@ -162,16 +162,16 @@ DataSet readFile(const char* fileName){
             result.push_back(cell);
             features.push_back(featureRow);
         }
-        std::cout << "number or rows: " << numRows << " number of columns " << numCols << std::endl;
+        // std::cout << "number or rows: " << numRows << " number of columns " << numCols << std::endl;
 
         // Converting instances to double
         for (int i = 0; i < numRows; ++i) {
             std:: vector<double> fVector;
             for (int j = 0; j < numCols - 1; j++) {
-                std::cout << features[i][j] << ", ";
+                // std::cout << features[i][j] << ", ";
                 fVector.push_back(stod(features[i][j]));
             }
-            std::cout << result[i] << std::endl;
+            // std::cout << result[i] << std::endl;
             instances.push_back(fVector);
         }
     }
