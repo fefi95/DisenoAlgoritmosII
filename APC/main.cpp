@@ -25,28 +25,45 @@ int main(int argc, char const *argv[]) {
 
     // Statistics
     for (int name = 0; name < NUM_PARTITIONS; ++name) {
-        ofstream file;
-        file.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
-        file << "Particion, Aciertos() , Error(), Tiempo(sg) " << std::endl;
+        // File statistics for no weight
+        ofstream fileNoW;
+        fileNoW.open("../Paper/statistics/" + dataNames[name] + "/no_weights.csv");
+        fileNoW << "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) " << std::endl;
+
+        // File statistics for RELIEF
+        ofstream fileR;
+        fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
+        fileR << "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) " << std::endl;
+
         std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
         DataSet dataset = readFile(dsFile.c_str());
 
-        // Statistics RELIEF
         for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
-          std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
-          // std::cout << ds.first << std::endl;
-          timeStart = time(NULL);
-          std::vector<double> weights = relief(ds.first);
-          nHits = NN1(ds.first, ds.second, weights);
-          timeEnd = time(NULL);
 
+          // Statistics without weights
+          std::cout << "Executing K-NN algorithm without weights on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+          timeStart = time(NULL);
+          std::vector<double> weights1(ds.first.nFeatures, 1.0);
+          nHits = NN1(ds.first, ds.second, weights1);
+          timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
-          file << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+          fileNoW << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+          std::cout << "done!" << std::endl;
+
+          // Statistics RELIEF
+          std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+          timeStart = time(NULL);
+          std::vector<double> weights2 = relief(ds.first);
+          nHits = NN1(ds.first, ds.second, weights2);
+          timeEnd = time(NULL);
+          timeElapsed = difftime(timeEnd, timeStart);
+          nError = 100 - nHits;
+          fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
         }
-        file.close();
+        fileR.close();
     }
 
 
