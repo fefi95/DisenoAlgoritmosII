@@ -16,7 +16,9 @@
 
 int NUM_PARTITIONS = 4;
 int NUM_DATASETS = 4;
-std::vector<string> dataNames = {"iris" , "sonar", "wdbc", "spambase" };
+std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
+std::vector<int> maxIterations = {2, 2, 2, 2 };
+std::vector<int> neighborsPerGen = {3, 3, 3, 3 };
 
 class Statistics {
 public:
@@ -107,7 +109,7 @@ int main(int argc, char const *argv[]) {
           std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           timeStart = time(NULL);
           APC_Instance w(dataset.nFeatures);
-          APC_Instance weights3 = iteratedLocalSearch(w, ds.first, ds.second, 2, 3);
+          APC_Instance weights3 = iteratedLocalSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
           nHits = weights3.evaluate(ds.first, ds.second);
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
@@ -120,7 +122,7 @@ int main(int argc, char const *argv[]) {
           std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           timeStart = time(NULL);
           APC_Instance w2(weights2);
-          APC_Instance weights4 = iteratedLocalSearch(w2, ds.first, ds.second, 2, 3);
+          APC_Instance weights4 = iteratedLocalSearch(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
           nHits = weights4.evaluate(ds.first, ds.second);
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
