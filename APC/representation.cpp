@@ -33,7 +33,7 @@ public:
 	// random initialization
 	APC_Instance(int length){
 		weights.resize(length);
-		//srand(seed); We assume it is already initialized	
+		//srand(seed); We assume it is already initialized
 
 		// Generate random numbers for each element
 		for (int i = 0; i < length; ++i){
@@ -46,7 +46,7 @@ public:
 	APC_Instance(vector<double> init){
 		weights = init;
 	}
-	
+
 
 	APC_Instance genNeighbor(){
 		vector<double> neighbor;
@@ -56,7 +56,7 @@ public:
 
 		// initialize the neighbor with previous value
 		neighbor.assign(weights.begin(), weights.end());
-		
+
 		// Make Changes
 		posToChange = rand() % nFeatures;
 		delta = dRand(-1,1);
@@ -103,6 +103,13 @@ public:
 
 		return neighbors;
 	}
+
+  APC_Instance perturbSolution(){
+    vector<APC_Instance> neighbor = this -> genNeighbors(1);
+    neighbor = neighbor[0].genNeighbors(1);
+    APC_Instance perturbation = neighbor[0];
+    return perturbation;
+  }
 
 	double evaluate(DataSet trainingSet, DataSet testSet){
 		return NN1(trainingSet, testSet, weights);

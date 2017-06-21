@@ -7,11 +7,12 @@
  *  Functions for reading the dataset
  */
 
+#include <string>
+#include <ctime>
 #include "dataset.hpp"
 #include "relief.hpp"
 #include "NearestNeighbor.cpp"
-#include <string>
-#include <ctime>
+#include "ILS.hpp"
 
 int NUM_PARTITIONS = 4;
 std::vector<string> dataNames = {"iris" , "sonar", "spambase", "wdbc" };
@@ -22,18 +23,20 @@ int main(int argc, char const *argv[]) {
     time_t timeEnd;
     double timeElapsed;
     double nHits, nError;
+    string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
 
     // Statistics
     for (int name = 0; name < NUM_PARTITIONS; ++name) {
+
         // File statistics for no weight
         ofstream fileNoW;
         fileNoW.open("../Paper/statistics/" + dataNames[name] + "/no_weights.csv");
-        fileNoW << "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) " << std::endl;
+        fileNoW << header << std::endl;
 
         // File statistics for RELIEF
         ofstream fileR;
         fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
-        fileR << "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) " << std::endl;
+        fileR << header << std::endl;
 
         std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
         DataSet dataset = readFile(dsFile.c_str());
