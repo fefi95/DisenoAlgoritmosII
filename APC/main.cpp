@@ -4,7 +4,7 @@
  *  @author : Erick Silva
  *  @author : Stefani Castellanos 11-11394
  *
- *  Functions for reading the dataset
+ *  Statistics for APC problem
  */
 
 #include <string>
@@ -109,7 +109,7 @@ int main(int argc, char const *argv[]) {
           std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           timeStart = time(NULL);
           APC_Instance w(dataset.nFeatures);
-          APC_Instance weights3 = iteratedLocalSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
+          APC_Instance weights3 = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
           nHits = weights3.evaluate(ds.first, ds.second);
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
@@ -122,7 +122,7 @@ int main(int argc, char const *argv[]) {
           std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           timeStart = time(NULL);
           APC_Instance w2(weights2);
-          APC_Instance weights4 = iteratedLocalSearch(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
+          APC_Instance weights4 = ILS_convergence(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
           nHits = weights4.evaluate(ds.first, ds.second);
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);

@@ -21,8 +21,8 @@
 using namespace std;
 
 /**
- * Function that executes localSearch given an initial instance
- *  it tries to find a local optimum through it's neighbors
+ * Function that executes iterated local Search given an initial instance
+ *  it tries to find a local optimum through it's neighbors.
  *
  * @params initial      : seed for random number generation.
  * @params trainingSet  : the training set to be used in the KNN function.
@@ -33,15 +33,7 @@ using namespace std;
  * @return The APC_instance with the best score it can find.
  *
  */
- //
- // s∗ = local search(s0) ; /∗ Apply a given local search algorithm ∗/
- // Repeat
- // s′ = Perturb (s∗, search history) ; /∗ Perturb the obtained local optima ∗/
- // s′∗ = Local search (s′) ; /∗ Apply local search on the perturbed solution ∗/
- // s∗ = Accept (s∗, s′∗, search memory) ; /∗ Accepting criteria ∗/
- // Until Stopping criteria
- // Output: Best solution found.
-APC_Instance iteratedLocalSearch(APC_Instance initial,
+APC_Instance ILS_maxIter(APC_Instance initial,
                                  DataSet trainingSet,
                                  DataSet testSet,
                                  int maxIterations = 300,
@@ -65,5 +57,42 @@ APC_Instance iteratedLocalSearch(APC_Instance initial,
     return solution;
 }
 
+APC_Instance ILS_convergence(APC_Instance initial,
+                                 DataSet trainingSet,
+                                 DataSet testSet,
+                                 int maxIterations = 300,
+                                 int neighborsPerGen = 1,
+                                 int iterToStop = 2){
+
+    APC_Instance solution = localSearch(initial,
+                                        trainingSet,
+                                        testSet,
+                                        maxIterations,
+                                        neighborsPerGen);
+
+    int totallIter = 0;
+    int countIter = 0;
+    int oldValue = solution.evaluate(trainingSet, testSet);
+    int newValue;
+    while (countIter != iterToStop) {
+        solution.perturbSolution();
+        solution = localSearch(initial,
+                               trainingSet,
+                               testSet,
+                               maxIterations,
+                               neighborsPerGen);
+        newValue = solution.evaluate(trainingSet, testSet);
+        if (abs(oldValue - newValue) < 0.1 ) {
+            ++countIter;
+        }
+        else {
+            countIter = 0;
+        }
+        ++totallIter;
+    }
+
+    std::cout << "total number of iterations: " << totallIter << std::endl;
+    return solution;
+}
 
 #endif // ILS_HPP
