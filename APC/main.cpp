@@ -12,6 +12,7 @@
 #include "dataset.hpp"
 #include "relief.hpp"
 #include "NearestNeighbor.cpp"
+#include "representation.cpp"
 #include "ILS.hpp"
 
 int NUM_PARTITIONS = 4;
@@ -37,6 +38,11 @@ int main(int argc, char const *argv[]) {
         ofstream fileR;
         fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
         fileR << header << std::endl;
+
+        // File statistics for ILS
+        ofstream fileILS;
+        fileILS.open("../Paper/statistics/" + dataNames[name] + "/ILS_relief.csv");
+        fileILS << header << std::endl;
 
         std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
         DataSet dataset = readFile(dsFile.c_str());
@@ -65,8 +71,25 @@ int main(int argc, char const *argv[]) {
           nError = 100 - nHits;
           fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
+
+          // Statistics ILS
+          std::cout << "Executing ILS algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+          timeStart = time(NULL);
+          APC_Instance w2(weights2);
+          // APC_Instance w2(dataset.nFeatures);
+          APC_Instance weights3 = iteratedLocalSearch(w2, ds.first, ds.second, 2, 3);
+          nHits = weights3.evaluate(ds.first, ds.second);
+          timeEnd = time(NULL);
+          timeElapsed = difftime(timeEnd, timeStart);
+          nError = 100 - nHits;
+          fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+          std::cout << "done!" << std::endl;
         }
+
+        // Close all files
         fileR.close();
+        fileNoW.close();
+        fileILS.close();
     }
 
 
