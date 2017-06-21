@@ -16,7 +16,8 @@
 #include "ILS.hpp"
 
 int NUM_PARTITIONS = 4;
-std::vector<string> dataNames = {"iris" , "sonar", "spambase", "wdbc" };
+int NUM_DATASETS = 4;
+std::vector<string> dataNames = {"iris" , "sonar", "wdbc", "spambase" };
 
 int main(int argc, char const *argv[]) {
 
@@ -27,7 +28,7 @@ int main(int argc, char const *argv[]) {
     string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
 
     // Statistics
-    for (int name = 0; name < NUM_PARTITIONS; ++name) {
+    for (int name = 0; name < NUM_DATASETS; ++name) {
 
         // File statistics for no weight
         ofstream fileNoW;
@@ -39,11 +40,17 @@ int main(int argc, char const *argv[]) {
         fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
         fileR << header << std::endl;
 
-        // File statistics for ILS
+        // File statistics for ILS random
         ofstream fileILS;
-        fileILS.open("../Paper/statistics/" + dataNames[name] + "/ILS_relief.csv");
+        fileILS.open("../Paper/statistics/" + dataNames[name] + "/ILS_random.csv");
         fileILS << header << std::endl;
 
+        // File statistics for ILS RELIEF
+        ofstream fileILSR;
+        fileILSR.open("../Paper/statistics/" + dataNames[name] + "/ILS_relief.csv");
+        fileILSR << header << std::endl;
+
+        // Read dataset file
         std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
         DataSet dataset = readFile(dsFile.c_str());
 
@@ -72,17 +79,28 @@ int main(int argc, char const *argv[]) {
           fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
 
-          // Statistics ILS
-          std::cout << "Executing ILS algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+          // Statistics ILS random
+          std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
           timeStart = time(NULL);
-          APC_Instance w2(weights2);
-          // APC_Instance w2(dataset.nFeatures);
-          APC_Instance weights3 = iteratedLocalSearch(w2, ds.first, ds.second, 2, 3);
+          APC_Instance w(dataset.nFeatures);
+          APC_Instance weights3 = iteratedLocalSearch(w, ds.first, ds.second, 2, 3);
           nHits = weights3.evaluate(ds.first, ds.second);
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
           fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+          std::cout << "done!" << std::endl;
+
+          // Statistics ILS RELIEF
+          std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+          timeStart = time(NULL);
+          APC_Instance w2(weights2);
+          APC_Instance weights4 = iteratedLocalSearch(w2, ds.first, ds.second, 2, 3);
+          nHits = weights4.evaluate(ds.first, ds.second);
+          timeEnd = time(NULL);
+          timeElapsed = difftime(timeEnd, timeStart);
+          nError = 100 - nHits;
+          fileILSR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
         }
 
@@ -90,6 +108,7 @@ int main(int argc, char const *argv[]) {
         fileR.close();
         fileNoW.close();
         fileILS.close();
+        fileILSR.close();
     }
 
 
