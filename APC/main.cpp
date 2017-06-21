@@ -12,13 +12,31 @@
 #include "dataset.hpp"
 #include "relief.hpp"
 #include "NearestNeighbor.cpp"
-#include "representation.cpp"
 #include "ILS.hpp"
 
 int NUM_PARTITIONS = 4;
 int NUM_DATASETS = 4;
 std::vector<string> dataNames = {"iris" , "sonar", "wdbc", "spambase" };
 
+class Statistics {
+public:
+    double hits;
+    double miss;
+    double time;
+
+    Statistics(){
+        hits = 0;
+        miss = 0;
+        time = 0.0;
+    };
+
+    void update(double nHits, double nMiss, double timeE){
+        hits += nHits;
+        miss += nMiss;
+        time += timeE;
+    }
+
+};
 int main(int argc, char const *argv[]) {
 
     time_t timeStart;
@@ -34,21 +52,25 @@ int main(int argc, char const *argv[]) {
         ofstream fileNoW;
         fileNoW.open("../Paper/statistics/" + dataNames[name] + "/no_weights.csv");
         fileNoW << header << std::endl;
+        Statistics noW;
 
         // File statistics for RELIEF
         ofstream fileR;
         fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
         fileR << header << std::endl;
+        Statistics rel;
 
         // File statistics for ILS random
         ofstream fileILS;
         fileILS.open("../Paper/statistics/" + dataNames[name] + "/ILS_random.csv");
         fileILS << header << std::endl;
+        Statistics ILS;
 
         // File statistics for ILS RELIEF
         ofstream fileILSR;
         fileILSR.open("../Paper/statistics/" + dataNames[name] + "/ILS_relief.csv");
         fileILSR << header << std::endl;
+        Statistics ILS_r;
 
         // Read dataset file
         std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
@@ -65,6 +87,7 @@ int main(int argc, char const *argv[]) {
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
+          noW.update(nHits, nError, timeElapsed);
           fileNoW << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
 
@@ -76,6 +99,7 @@ int main(int argc, char const *argv[]) {
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
+          rel.update(nHits, nError, timeElapsed);
           fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
 
@@ -88,6 +112,7 @@ int main(int argc, char const *argv[]) {
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
+          ILS.update(nHits, nError, timeElapsed);
           fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
 
@@ -100,9 +125,25 @@ int main(int argc, char const *argv[]) {
           timeEnd = time(NULL);
           timeElapsed = difftime(timeEnd, timeStart);
           nError = 100 - nHits;
+          ILS_r.update(nHits, nError, timeElapsed);
           fileILSR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
           std::cout << "done!" << std::endl;
         }
+
+        // Average
+        double ave_hits, ave_miss, ave_time;
+
+        ave_hits = noW.hits/NUM_PARTITIONS; ave_miss = noW.miss/NUM_PARTITIONS; ave_time = noW.time/NUM_PARTITIONS;
+        fileNoW << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+        ave_hits = rel.hits/NUM_PARTITIONS; ave_miss = rel.miss/NUM_PARTITIONS; ave_time = rel.time/NUM_PARTITIONS;
+        fileR << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+        ave_hits = ILS.hits/NUM_PARTITIONS; ave_miss = ILS.miss/NUM_PARTITIONS; ave_time = ILS.time/NUM_PARTITIONS;
+        fileILS << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+        ave_hits = ILS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
+        fileILSR << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
         // Close all files
         fileR.close();
