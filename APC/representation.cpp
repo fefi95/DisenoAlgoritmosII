@@ -104,7 +104,7 @@ public:
 		return neighbors;
 	}
 
-	double evaluate(DataSet trainingSet, DataSet testSet){
+	double evaluate(DataSet &trainingSet, DataSet &testSet){
 		return NN1(trainingSet, testSet, weights);
 	}
 

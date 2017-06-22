@@ -30,7 +30,7 @@ using namespace std;
  * @return : euclidean distance between the two vectors.
  */
 
-double weightedDistance(vector<double> inst1, vector<double> inst2, int nFeatures, vector<double> const &weights) {
+double weightedDistance(vector<double> &inst1, vector<double> &inst2, int nFeatures, vector<double> const &weights) {
     double dist = 0;
     for (int i = 0; i < nFeatures; ++i) {
         dist = dist + pow(weights[i]*inst1[i] - inst2[i], 2.0);
@@ -51,7 +51,7 @@ double weightedDistance(vector<double> inst1, vector<double> inst2, int nFeature
  *
  * @return : percentage of test set classified correctly.
  */
-double NN1(DataSet trainingSet, DataSet testSet, vector<double> const &weights){
+double NN1(DataSet &trainingSet, DataSet &testSet, vector<double> const &weights){
     int nFeatures = trainingSet.nFeatures;
     int nTestInstances = testSet.nInstances;
     int nTrainInstances = trainingSet.nInstances;
