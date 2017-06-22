@@ -9,7 +9,7 @@
 
 
 #ifndef NNeighbor1
-#define NNeighbor1 
+#define NNeighbor1
 
 #include <vector>
 #include "dataset.hpp"
@@ -33,7 +33,7 @@ using namespace std;
 double weightedDistance(vector<double> &inst1, vector<double> &inst2, int nFeatures, vector<double> const &weights) {
     double dist = 0;
     for (int i = 0; i < nFeatures; ++i) {
-        dist = dist + pow(weights[i]*inst1[i] - inst2[i], 2.0);
+        dist = dist + pow(weights[i]*(inst1[i] - inst2[i]), 2.0);
     }
     dist = sqrt(dist);
     return dist;
@@ -44,7 +44,7 @@ double weightedDistance(vector<double> &inst1, vector<double> &inst2, int nFeatu
 // UPGRADE TO K-D TREE.
 /**
  * Function that performs the nearest neighbor classifier
- *  and returns percentage of correct classifications. 
+ *  and returns percentage of correct classifications.
  *
  * @params trainingSet:  set used for training.
  * @params testSet   :   testing sets.
@@ -61,7 +61,7 @@ double NN1(DataSet &trainingSet, DataSet &testSet, vector<double> const &weights
     double minDistancePos;
     double currentDistance;
 
-    for (int i = 0; i < nTestInstances; ++i){        
+    for (int i = 0; i < nTestInstances; ++i){
         minDistance = INFINITY;
         minDistancePos = 0;
         for (int j = 0; j < nTrainInstances; ++j){
@@ -78,7 +78,7 @@ double NN1(DataSet &trainingSet, DataSet &testSet, vector<double> const &weights
             correctResults++;
         }
     }
-    
+
     double correctPercentage = (double)correctResults/(double)nTestInstances;
     correctPercentage = 100*correctPercentage;
 
