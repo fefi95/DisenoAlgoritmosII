@@ -4,7 +4,7 @@
  *  @author : Erick Silva
  *  @author : Stefani Castellanos 11-11394
  *
- *  A local search function.
+ *  Simulated annealing function.
  */
 
 #ifndef SIM_ANNEALING
