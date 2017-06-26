@@ -104,14 +104,14 @@ public:
 		return neighbors;
 	}
 
-  APC_Instance perturbSolution(){
-    vector<APC_Instance> neighbor = this -> genNeighbors(1);
-    neighbor = neighbor[0].genNeighbors(1);
-    APC_Instance perturbation = neighbor[0];
-    return perturbation;
-  }
+	APC_Instance perturbSolution(){
+		vector<APC_Instance> neighbor = this -> genNeighbors(1);
+		neighbor = neighbor[0].genNeighbors(1);
+		APC_Instance perturbation = neighbor[0];
+		return perturbation;
+	}
 
-	double evaluate(DataSet trainingSet, DataSet testSet){
+	double evaluate(DataSet &trainingSet, DataSet &testSet){
 		return NN1(trainingSet, testSet, weights);
 	}
 
