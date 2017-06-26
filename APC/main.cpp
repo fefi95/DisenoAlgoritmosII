@@ -79,57 +79,57 @@ int main(int argc, char const *argv[]) {
         DataSet dataset = readFile(dsFile.c_str());
 
         for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
-          std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
+            std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
 
-          // Statistics without weights
-          std::cout << "Executing K-NN algorithm without weights on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-          timeStart = time(NULL);
-          std::vector<double> weights1(ds.first.nFeatures, 1.0);
-          nHits = NN1(ds.first, ds.second, weights1);
-          timeEnd = time(NULL);
-          timeElapsed = difftime(timeEnd, timeStart);
-          nError = 100 - nHits;
-          noW.update(nHits, nError, timeElapsed);
-          fileNoW << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-          std::cout << "done!" << std::endl;
+            // Statistics without weights
+            std::cout << "Executing K-NN algorithm without weights on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+            timeStart = time(NULL);
+            std::vector<double> weights1(ds.first.nFeatures, 1.0);
+            nHits = NN1(ds.first, ds.second, weights1);
+            timeEnd = time(NULL);
+            timeElapsed = difftime(timeEnd, timeStart);
+            nError = 100 - nHits;
+            noW.update(nHits, nError, timeElapsed);
+            fileNoW << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+            std::cout << "done!" << std::endl;
 
-          // Statistics RELIEF
-          std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-          timeStart = time(NULL);
-          std::vector<double> weights2 = relief(ds.first);
-          nHits = NN1(ds.first, ds.second, weights2);
-          timeEnd = time(NULL);
-          timeElapsed = difftime(timeEnd, timeStart);
-          nError = 100 - nHits;
-          rel.update(nHits, nError, timeElapsed);
-          fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-          std::cout << "done!" << std::endl;
+            // Statistics RELIEF
+            std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+            timeStart = time(NULL);
+            std::vector<double> weights2 = relief(ds.first);
+            nHits = NN1(ds.first, ds.second, weights2);
+            timeEnd = time(NULL);
+            timeElapsed = difftime(timeEnd, timeStart);
+            nError = 100 - nHits;
+            rel.update(nHits, nError, timeElapsed);
+            fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+            std::cout << "done!" << std::endl;
 
-          // Statistics ILS random
-          std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-          timeStart = time(NULL);
-          APC_Instance w(dataset.nFeatures);
-          APC_Instance weights3 = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
-          nHits = weights3.evaluate(ds.first, ds.second);
-          timeEnd = time(NULL);
-          timeElapsed = difftime(timeEnd, timeStart);
-          nError = 100 - nHits;
-          ILS.update(nHits, nError, timeElapsed);
-          fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-          std::cout << "done!" << std::endl;
+            // Statistics ILS random
+            std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+            timeStart = time(NULL);
+            APC_Instance w(dataset.nFeatures);
+            APC_Instance weights3 = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+            nHits = weights3.evaluate(ds.first, ds.second);
+            timeEnd = time(NULL);
+            timeElapsed = difftime(timeEnd, timeStart);
+            nError = 100 - nHits;
+            ILS.update(nHits, nError, timeElapsed);
+            fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+            std::cout << "done!" << std::endl;
 
-          // Statistics ILS RELIEF
-          std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-          timeStart = time(NULL);
-          APC_Instance w2(weights2);
-          APC_Instance weights4 = ILS_convergence(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
-          nHits = weights4.evaluate(ds.first, ds.second);
-          timeEnd = time(NULL);
-          timeElapsed = difftime(timeEnd, timeStart);
-          nError = 100 - nHits;
-          ILS_r.update(nHits, nError, timeElapsed);
-          fileILSR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-          std::cout << "done!" << std::endl;
+            // Statistics ILS RELIEF
+            std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
+            timeStart = time(NULL);
+            APC_Instance w2(weights2);
+            APC_Instance weights4 = ILS_convergence(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+            nHits = weights4.evaluate(ds.first, ds.second);
+            timeEnd = time(NULL);
+            timeElapsed = difftime(timeEnd, timeStart);
+            nError = 100 - nHits;
+            ILS_r.update(nHits, nError, timeElapsed);
+            fileILSR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+            std::cout << "done!" << std::endl;
         }
 
         // Average
