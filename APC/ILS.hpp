@@ -70,10 +70,12 @@ APC_Instance ILS_convergence(APC_Instance initial,
                                         maxIterations,
                                         neighborsPerGen);
 
+    APC_Instance bestSol = solution;
     int totallIter = 0;
     int countIter = 0;
-    int oldValue = solution.evaluate(trainingSet, testSet);
-    int newValue;
+    double oldValue = solution.evaluate(trainingSet, testSet);
+    double bestValue = solution.evaluate(trainingSet, testSet);
+    double newValue;
     while (countIter != iterToStop) {
         solution.perturbSolution();
         solution = localSearch(initial,
@@ -82,17 +84,25 @@ APC_Instance ILS_convergence(APC_Instance initial,
                                maxIterations,
                                neighborsPerGen);
         newValue = solution.evaluate(trainingSet, testSet);
-        if (abs(oldValue - newValue) < 0.1 ) {
+        if (abs(oldValue - newValue) < 0.01 ) {
             ++countIter;
+            // std::cout << "oldValue = " << oldValue << " newValue = " << newValue << std::endl;
         }
         else {
             countIter = 0;
         }
+        // Keep current best solution
+        if (bestValue < newValue ) {
+            bestSol = solution;
+            bestValue = newValue;
+        }
+        std::cout << "oldValue = " << oldValue << " newValue = " << newValue << std::endl;
+        oldValue = newValue;
         ++totallIter;
     }
 
     std::cout << "total number of iterations: " << totallIter << std::endl;
-    return solution;
+    return bestSol;
 }
 
 #endif // ILS_HPP
