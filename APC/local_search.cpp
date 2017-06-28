@@ -31,8 +31,8 @@ using namespace std;
  * 
  */
 APC_Instance localSearch(APC_Instance initial, 
-                            DataSet trainingSet, 
-                            DataSet testSet, 
+                            DataSet &trainingSet, 
+                            DataSet &testSet, 
                             int maxIterations = 300,
                             int neighborsPerGen = 1){
 
