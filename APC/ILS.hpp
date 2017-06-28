@@ -56,7 +56,21 @@ APC_Instance ILS_maxIter(APC_Instance initial,
 
     return solution;
 }
-
+/**
+ * Function that executes iterated local Search given an initial instance
+ * it tries to find a local optimum through it's neighbors until the
+ * solution evaluate to the same value after iterToStop iterations.
+ *
+ * @params initial      : seed for random number generation.
+ * @params trainingSet  : the training set to be used in the KNN function.
+ * @params testSet      : the test set to be used in the KNN function.
+ * @params maxIterations: max iterations to use.
+ * @params neighborsPerGen: max neighbors to generate each time.
+ * @params iterToStop: amount of iterations with the same value befoore stoping
+ *
+ * @return The APC_instance with the best score it can find.
+ *
+ */
 APC_Instance ILS_convergence(APC_Instance initial,
                                  DataSet trainingSet,
                                  DataSet testSet,
@@ -86,11 +100,11 @@ APC_Instance ILS_convergence(APC_Instance initial,
         newValue = solution.evaluate(trainingSet, testSet);
         if (abs(oldValue - newValue) < 0.01 ) {
             ++countIter;
-            // std::cout << "oldValue = " << oldValue << " newValue = " << newValue << std::endl;
         }
         else {
             countIter = 0;
         }
+
         // Keep current best solution
         if (bestValue < newValue ) {
             bestSol = solution;
