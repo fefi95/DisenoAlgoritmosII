@@ -14,12 +14,14 @@
 #include "relief.hpp"
 #include "NearestNeighbor.cpp"
 #include "ILS.hpp"
+#include "SimAnnealing.cpp"
 
-int NUM_PARTITIONS = 4;
-int NUM_DATASETS = 1;
+int NUM_PARTITIONS = 5;
+int NUM_DATASETS = 4;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
 std::vector<int> maxIterations = {2, 2, 2, 2 };
 std::vector<int> neighborsPerGen = {3, 3, 3, 3 };
+std::vector<int> temperature = {3, 3, 10, 5 };
 time_t timeStart;
 time_t timeEnd;
 double timeElapsed;
@@ -107,7 +109,7 @@ void statisticsILSRand(Statistics &stats,
 
 }
 
-// Statistics ILS random
+// Statistics ILS relief
 void statisticsILSRelief( Statistics &stats,
                           int name,
                           int part,
@@ -118,6 +120,47 @@ void statisticsILSRelief( Statistics &stats,
     timeStart = time(NULL);
     APC_Instance w(reliefV);
     APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// Statistics SA random
+void statisticsSARand(Statistics &stats,
+                      int name,
+                      int part,
+                      std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(ds.first.nFeatures);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGen[name]);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// Statistics SA relief
+void statisticsSARelief( Statistics &stats,
+                          int name,
+                          int part,
+                          std::pair<DataSet, DataSet> &ds,
+                          APC_Instance reliefV) {
+
+    std::cout << "Executing SA (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(reliefV);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGen[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = time(NULL);
     timeElapsed = difftime(timeEnd, timeStart);
@@ -194,8 +237,15 @@ int main(int argc, char const *argv[]) {
                     statisticsILSRand (stats, name, i, ds);
                 }
                 else if (strcmp(argv[1], "ILS_relief") == 0) {
-                      std::vector<double> weights = relief(ds.first);
+                    std::vector<double> weights = relief(ds.first);
                     statisticsILSRelief (stats, name, i, ds, weights);
+                }
+                else if (strcmp(argv[1], "SA_random") == 0) {
+                    statisticsSARand (stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "SA_relief") == 0) {
+                    std::vector<double> weights = relief(ds.first);
+                    statisticsSARelief (stats, name, i, ds, weights);
                 }
             }
 
