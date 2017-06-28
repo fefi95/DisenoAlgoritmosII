@@ -28,17 +28,20 @@ string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
 
 class Statistics {
 public:
+    ofstream file;
     double hits;
     double miss;
     double time;
 
-    Statistics(){
+    Statistics(std::string fileName, int name){
+        file.open("../Paper/statistics/" + dataNames[name] + "/" + fileName + ".csv");
+        file << header << std::endl;
         hits = 0;
         miss = 0;
         time = 0.0;
     };
 
-    void update(double nHits, double nMiss, double timeE){
+    void update(double nHits, double nMiss, double timeE) {
         hits += nHits;
         miss += nMiss;
         time += timeE;
@@ -46,11 +49,10 @@ public:
 };
 
 // Statistics without weights
-void statisticsNoWeight(ofstream &file,
-                        Statistics &stats,
-                        int name,
-                        int part,
-                        std::pair<DataSet, DataSet> &ds ) {
+void statisticsNoWeight( Statistics &stats,
+                         int name,
+                         int part,
+                         std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing K-NN algorithm without weights on " << dataNames[name]
               << " dataset (" << part << ")" << std::endl;
@@ -61,16 +63,15 @@ void statisticsNoWeight(ofstream &file,
     timeElapsed = difftime(timeEnd, timeStart);
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
-    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 }
 
 // Statistics RELIEF
-APC_Instance statisticsRelief(ofstream &file,
-                              Statistics &stats,
-                              int name,
-                              int part,
-                              std::pair<DataSet, DataSet> &ds) {
+APC_Instance statisticsRelief( Statistics &stats,
+                               int name,
+                               int part,
+                               std::pair<DataSet, DataSet> &ds) {
 
     std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = time(NULL);
@@ -80,15 +81,14 @@ APC_Instance statisticsRelief(ofstream &file,
     timeElapsed = difftime(timeEnd, timeStart);
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
-    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
     return weights;
 }
 
 // Statistics ILS random
-void statisticsILSRand(ofstream &file,
-                      Statistics &stats,
+void statisticsILSRand(Statistics &stats,
                       int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
@@ -102,18 +102,17 @@ void statisticsILSRand(ofstream &file,
     timeElapsed = difftime(timeEnd, timeStart);
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
-    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
 }
 
 // Statistics ILS random
-void statisticsILSRelief(ofstream &file,
-                      Statistics &stats,
-                      int name,
-                      int part,
-                      std::pair<DataSet, DataSet> &ds,
-                      APC_Instance reliefV) {
+void statisticsILSRelief( Statistics &stats,
+                          int name,
+                          int part,
+                          std::pair<DataSet, DataSet> &ds,
+                          APC_Instance reliefV) {
 
     std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = time(NULL);
@@ -124,7 +123,7 @@ void statisticsILSRelief(ofstream &file,
     timeElapsed = difftime(timeEnd, timeStart);
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
-    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
 }
@@ -132,82 +131,81 @@ void statisticsILSRelief(ofstream &file,
 int main(int argc, char const *argv[]) {
 
     // Statistics
-    for (int name = 0; name < NUM_DATASETS; ++name) {
+    if (strcmp(argv[1], "all") == 0) {
 
-        // File statistics for no weight
-        ofstream fileNoW;
-        fileNoW.open("../Paper/statistics/" + dataNames[name] + "/no_weights.csv");
-        fileNoW << header << std::endl;
-        Statistics noW;
+        for (int name = 0; name < NUM_DATASETS; ++name) {
+            Statistics noW("no_weights", name);
+            Statistics rel("relief", name);
+            Statistics ILS("ILS_random", name);
+            Statistics ILS_r("ILS_relief", name);
 
-        // File statistics for RELIEF
-        ofstream fileR;
-        fileR.open("../Paper/statistics/" + dataNames[name] + "/relief.csv");
-        fileR << header << std::endl;
-        Statistics rel;
+            // Read dataset file
+            std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
+            DataSet dataset = readFile(dsFile.c_str());
 
-        // File statistics for ILS random
-        ofstream fileILS;
-        fileILS.open("../Paper/statistics/" + dataNames[name] + "/ILS_random.csv");
-        fileILS << header << std::endl;
-        Statistics ILS;
-
-        // File statistics for ILS RELIEF
-        ofstream fileILSR;
-        fileILSR.open("../Paper/statistics/" + dataNames[name] + "/ILS_relief.csv");
-        fileILSR << header << std::endl;
-        Statistics ILS_r;
-
-        // Read dataset file
-        std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
-        DataSet dataset = readFile(dsFile.c_str());
-
-        for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
-            std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
-
-            if (strcmp(argv[1], "no_weights") == 0) {
-                statisticsNoWeight (fileNoW, noW, name, i, ds);
+            for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
+                std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
+                statisticsNoWeight (noW, name, i, ds);
+                APC_Instance reliefV = statisticsRelief (rel, name, i, ds);
+                statisticsILSRand (ILS, name, i, ds);
+                statisticsILSRelief (ILS_r, name, i, ds, reliefV);
             }
-            else if (strcmp(argv[1], "relief") == 0) {
-                APC_Instance reliefV = statisticsRelief (fileR, rel, name, i, ds);
-            }
-            else if (strcmp(argv[1], "ILS_random") == 0) {
-                statisticsILSRand ( fileILS, ILS, name, i, ds);
-            }
-            else if (strcmp(argv[1], "ILS_relief") == 0) {
-                  std::vector<double> weights = relief(ds.first);
-                statisticsILSRelief ( fileILSR, ILS_r, name, i, ds, weights);
-            }
-            else if (strcmp(argv[1], "all") == 0) {
-                statisticsNoWeight (fileNoW, noW, name, i, ds);
-                APC_Instance reliefV = statisticsRelief (fileR, rel, name, i, ds);
-                statisticsILSRand ( fileILS, ILS, name, i, ds);
-                statisticsILSRelief ( fileILSR, ILS_r, name, i, ds, reliefV);
-            }
+            // Average
+            double ave_hits, ave_miss, ave_time;
+
+            ave_hits = noW.hits/NUM_PARTITIONS; ave_miss = noW.miss/NUM_PARTITIONS; ave_time = noW.time/NUM_PARTITIONS;
+            noW.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = rel.hits/NUM_PARTITIONS; ave_miss = rel.miss/NUM_PARTITIONS; ave_time = rel.time/NUM_PARTITIONS;
+            rel.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = ILS.hits/NUM_PARTITIONS; ave_miss = ILS.miss/NUM_PARTITIONS; ave_time = ILS.time/NUM_PARTITIONS;
+            ILS.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = ILS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
+            ILS_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            // Close all files
+            noW.file.close();
+            rel.file.close();
+            ILS.file.close();
+            ILS_r.file.close();
         }
-
-        // Average
-        double ave_hits, ave_miss, ave_time;
-
-        ave_hits = noW.hits/NUM_PARTITIONS; ave_miss = noW.miss/NUM_PARTITIONS; ave_time = noW.time/NUM_PARTITIONS;
-        fileNoW << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-        ave_hits = rel.hits/NUM_PARTITIONS; ave_miss = rel.miss/NUM_PARTITIONS; ave_time = rel.time/NUM_PARTITIONS;
-        fileR << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-        ave_hits = ILS.hits/NUM_PARTITIONS; ave_miss = ILS.miss/NUM_PARTITIONS; ave_time = ILS.time/NUM_PARTITIONS;
-        fileILS << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-        ave_hits = ILS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
-        fileILSR << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-        // Close all files
-        fileR.close();
-        fileNoW.close();
-        fileILS.close();
-        fileILSR.close();
     }
+    else {
+        for (int name = 0; name < NUM_DATASETS; ++name) {
 
+            Statistics stats(argv[1], name);
 
+            // Read dataset file
+            std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
+            DataSet dataset = readFile(dsFile.c_str());
+
+            for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
+                std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
+
+                if (strcmp(argv[1], "no_weights") == 0) {
+                    statisticsNoWeight (stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "relief") == 0) {
+                    APC_Instance reliefV = statisticsRelief (stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "ILS_random") == 0) {
+                    statisticsILSRand (stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "ILS_relief") == 0) {
+                      std::vector<double> weights = relief(ds.first);
+                    statisticsILSRelief (stats, name, i, ds, weights);
+                }
+            }
+
+            // Average
+            double ave_hits, ave_miss, ave_time;
+
+            ave_hits = stats.hits/NUM_PARTITIONS; ave_miss = stats.miss/NUM_PARTITIONS; ave_time = stats.time/NUM_PARTITIONS;
+            stats.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+            stats.file.close();
+        }
+    }
     return 0;
 }
