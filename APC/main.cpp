@@ -8,6 +8,7 @@
  */
 
 #include <string>
+#include <string.h>
 #include <ctime>
 #include "dataset.hpp"
 #include "relief.hpp"
@@ -15,10 +16,15 @@
 #include "ILS.hpp"
 
 int NUM_PARTITIONS = 4;
-int NUM_DATASETS = 4;
+int NUM_DATASETS = 1;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
 std::vector<int> maxIterations = {2, 2, 2, 2 };
 std::vector<int> neighborsPerGen = {3, 3, 3, 3 };
+time_t timeStart;
+time_t timeEnd;
+double timeElapsed;
+double nHits, nError;
+string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
 
 class Statistics {
 public:
@@ -37,15 +43,93 @@ public:
         miss += nMiss;
         time += timeE;
     }
-
 };
-int main(int argc, char const *argv[]) {
 
-    time_t timeStart;
-    time_t timeEnd;
-    double timeElapsed;
-    double nHits, nError;
-    string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
+// Statistics without weights
+void statisticsNoWeight(ofstream &file,
+                        Statistics &stats,
+                        int name,
+                        int part,
+                        std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing K-NN algorithm without weights on " << dataNames[name]
+              << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    std::vector<double> weights(ds.first.nFeatures, 1.0);
+    nHits = NN1(ds.first, ds.second, weights);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+}
+
+// Statistics RELIEF
+APC_Instance statisticsRelief(ofstream &file,
+                              Statistics &stats,
+                              int name,
+                              int part,
+                              std::pair<DataSet, DataSet> &ds) {
+
+    std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    std::vector<double> weights = relief(ds.first);
+    nHits = NN1(ds.first, ds.second, weights);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+    return weights;
+}
+
+// Statistics ILS random
+void statisticsILSRand(ofstream &file,
+                      Statistics &stats,
+                      int name,
+                      int part,
+                      std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(ds.first.nFeatures);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// Statistics ILS random
+void statisticsILSRelief(ofstream &file,
+                      Statistics &stats,
+                      int name,
+                      int part,
+                      std::pair<DataSet, DataSet> &ds,
+                      APC_Instance reliefV) {
+
+    std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(reliefV);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+int main(int argc, char const *argv[]) {
 
     // Statistics
     for (int name = 0; name < NUM_DATASETS; ++name) {
@@ -81,55 +165,25 @@ int main(int argc, char const *argv[]) {
         for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
             std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
 
-            // Statistics without weights
-            std::cout << "Executing K-NN algorithm without weights on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-            timeStart = time(NULL);
-            std::vector<double> weights1(ds.first.nFeatures, 1.0);
-            nHits = NN1(ds.first, ds.second, weights1);
-            timeEnd = time(NULL);
-            timeElapsed = difftime(timeEnd, timeStart);
-            nError = 100 - nHits;
-            noW.update(nHits, nError, timeElapsed);
-            fileNoW << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-            std::cout << "done!" << std::endl;
-
-            // Statistics RELIEF
-            std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-            timeStart = time(NULL);
-            std::vector<double> weights2 = relief(ds.first);
-            nHits = NN1(ds.first, ds.second, weights2);
-            timeEnd = time(NULL);
-            timeElapsed = difftime(timeEnd, timeStart);
-            nError = 100 - nHits;
-            rel.update(nHits, nError, timeElapsed);
-            fileR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-            std::cout << "done!" << std::endl;
-
-            // Statistics ILS random
-            std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-            timeStart = time(NULL);
-            APC_Instance w(dataset.nFeatures);
-            APC_Instance weights3 = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
-            nHits = weights3.evaluate(ds.first, ds.second);
-            timeEnd = time(NULL);
-            timeElapsed = difftime(timeEnd, timeStart);
-            nError = 100 - nHits;
-            ILS.update(nHits, nError, timeElapsed);
-            fileILS << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-            std::cout << "done!" << std::endl;
-
-            // Statistics ILS RELIEF
-            std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << i << ")" << std::endl;
-            timeStart = time(NULL);
-            APC_Instance w2(weights2);
-            APC_Instance weights4 = ILS_convergence(w2, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
-            nHits = weights4.evaluate(ds.first, ds.second);
-            timeEnd = time(NULL);
-            timeElapsed = difftime(timeEnd, timeStart);
-            nError = 100 - nHits;
-            ILS_r.update(nHits, nError, timeElapsed);
-            fileILSR << i << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-            std::cout << "done!" << std::endl;
+            if (strcmp(argv[1], "no_weights") == 0) {
+                statisticsNoWeight (fileNoW, noW, name, i, ds);
+            }
+            else if (strcmp(argv[1], "relief") == 0) {
+                APC_Instance reliefV = statisticsRelief (fileR, rel, name, i, ds);
+            }
+            else if (strcmp(argv[1], "ILS_random") == 0) {
+                statisticsILSRand ( fileILS, ILS, name, i, ds);
+            }
+            else if (strcmp(argv[1], "ILS_relief") == 0) {
+                  std::vector<double> weights = relief(ds.first);
+                statisticsILSRelief ( fileILSR, ILS_r, name, i, ds, weights);
+            }
+            else if (strcmp(argv[1], "all") == 0) {
+                statisticsNoWeight (fileNoW, noW, name, i, ds);
+                APC_Instance reliefV = statisticsRelief (fileR, rel, name, i, ds);
+                statisticsILSRand ( fileILS, ILS, name, i, ds);
+                statisticsILSRelief ( fileILSR, ILS_r, name, i, ds, reliefV);
+            }
         }
 
         // Average
