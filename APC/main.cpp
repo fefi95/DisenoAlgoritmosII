@@ -19,9 +19,9 @@
 int NUM_PARTITIONS = 5;
 int NUM_DATASETS = 4;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
-std::vector<int> maxIterations = {2, 2, 2, 2 };
-std::vector<int> neighborsPerGen = {3, 3, 3, 3 };
-std::vector<int> temperature = {3, 3, 10, 5 };
+std::vector<int> maxIterations = {10, 150, 15, 2 };
+std::vector<int> neighborsPerGen = {8, 80, 10, 3 };
+std::vector<int> temperature = {3, 3, 5, 5 };
 time_t timeStart;
 time_t timeEnd;
 double timeElapsed;
@@ -181,6 +181,8 @@ int main(int argc, char const *argv[]) {
             Statistics rel("relief", name);
             Statistics ILS("ILS_random", name);
             Statistics ILS_r("ILS_relief", name);
+            Statistics SA("SA_random", name);
+            Statistics SA_r("SA_relief", name);
 
             // Read dataset file
             std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
@@ -192,6 +194,8 @@ int main(int argc, char const *argv[]) {
                 APC_Instance reliefV = statisticsRelief (rel, name, i, ds);
                 statisticsILSRand (ILS, name, i, ds);
                 statisticsILSRelief (ILS_r, name, i, ds, reliefV);
+                statisticsSARand (SA, name, i, ds);
+                statisticsSARelief (SA_r, name, i, ds, reliefV);
             }
             // Average
             double ave_hits, ave_miss, ave_time;
@@ -208,11 +212,19 @@ int main(int argc, char const *argv[]) {
             ave_hits = ILS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
             ILS_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
+            ave_hits = SA.hits/NUM_PARTITIONS; ave_miss = SA.miss/NUM_PARTITIONS; ave_time = SA.time/NUM_PARTITIONS;
+            SA.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = SA_r.hits/NUM_PARTITIONS; ave_miss = SA_r.miss/NUM_PARTITIONS; ave_time = SA_r.time/NUM_PARTITIONS;
+            SA_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
             // Close all files
             noW.file.close();
             rel.file.close();
             ILS.file.close();
             ILS_r.file.close();
+            SA.file.close();
+            SA_r.file.close();
         }
     }
     else {
