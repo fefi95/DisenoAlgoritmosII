@@ -30,6 +30,10 @@ class APC_Instance{
 public:
 	vector<double> weights;
 
+	// Empty initialization
+	APC_Instance(){}
+
+
 	// random initialization
 	APC_Instance(int length){
 		weights.resize(length);
@@ -113,6 +117,45 @@ public:
 
 	double evaluate(DataSet &trainingSet, DataSet &testSet){
 		return NN1(trainingSet, testSet, weights);
+	}
+
+	// returns two children.
+	vector<APC_Instance> blendAlphaCrossover(APC_Instance &Y,double alpha = 0.2){
+		vector<APC_Instance> children;
+		if (Y.weights.size() != weights.size()){
+			return children;
+		}
+		vector<double> firstChild (weights.size());
+		vector<double> secondChild (weights.size());
+
+		double diff;
+		for (int i = 0 ; i < (int)weights.size(); i++){
+			diff = abs(Y.weights[i] - weights[i]);
+			firstChild[i] = dRand(max((double)0,min(weights[i],Y.weights[i]) - alpha*diff),
+									min((double)1,max(weights[i],Y.weights[i]) + alpha*diff));
+			secondChild[i] = dRand(max((double)0,min(weights[i],Y.weights[i]) - alpha*diff),
+									min((double)1,max(weights[i],Y.weights[i]) + alpha*diff));
+		}
+
+		children[0] = APC_Instance(firstChild);
+		children[1] = APC_Instance(secondChild);
+
+		return children;
+
+	}
+
+	bool operator==(const APC_Instance &other) const {
+		if (other.weights.size() != weights.size()){
+			return false;
+		}
+
+		for (int i = 0; i < (int)weights.size(); i++){
+			if (other.weights[i] != weights[i]){
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 
