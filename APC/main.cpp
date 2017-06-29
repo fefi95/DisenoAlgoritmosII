@@ -16,6 +16,7 @@
 #include "ILS.hpp"
 #include "SimAnnealing.cpp"
 #include "scatter.cpp"
+#include "diffEvolution.cpp"
 
 int NUM_PARTITIONS = 5;
 int NUM_DATASETS = 4;
@@ -23,6 +24,9 @@ std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
 std::vector<int> maxIterations = {10, 150, 15, 2 };
 std::vector<int> neighborsPerGen = {8, 80, 10, 3 };
 std::vector<int> temperature = {3, 3, 5, 5 };
+std::vector<int> popSize = {5, 5, 5, 5 };
+std::vector<double> CR = {0.5, 0.5, 0.5, 0.5 };
+std::vector<double> F = {0.5, 0.5, 0.5, 0.5 };
 time_t timeStart;
 time_t timeEnd;
 double timeElapsed;
@@ -172,6 +176,66 @@ void statisticsSARelief( Statistics &stats,
 
 }
 
+// Statistics DE random
+void statisticsDERand(Statistics &stats,
+                      int name,
+                      int part,
+                      std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance weights = difEvolution(ds.first.nFeatures, ds.first, ds.second, popSize[name], CR[name], F[name], maxIterations[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// // Statistics Scatter random
+// void statisticsScatterRand(Statistics &stats,
+//                            int name,
+//                            int part,
+//                            std::pair<DataSet, DataSet> &ds ) {
+//
+//     std::cout << "Executing Scatter (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+//     timeStart = time(NULL);
+//     APC_Instance w(ds.first.nFeatures);
+//     APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+//     nHits = weights.evaluate(ds.first, ds.second);
+//     timeEnd = time(NULL);
+//     timeElapsed = difftime(timeEnd, timeStart);
+//     nError = 100 - nHits;
+//     stats.update(nHits, nError, timeElapsed);
+//     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+//     std::cout << "done!" << std::endl;
+//
+// }
+//
+// // Statistics Scatter relief
+// void statisticsScatterRelief( Statistics &stats,
+//                               int name,
+//                               int part,
+//                               std::pair<DataSet, DataSet> &ds,
+//                               APC_Instance reliefV) {
+//
+//     std::cout << "Executing Scatter (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+//     timeStart = time(NULL);
+//     APC_Instance w(reliefV);
+//     APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+//     nHits = weights.evaluate(ds.first, ds.second);
+//     timeEnd = time(NULL);
+//     timeElapsed = difftime(timeEnd, timeStart);
+//     nError = 100 - nHits;
+//     stats.update(nHits, nError, timeElapsed);
+//     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+//     std::cout << "done!" << std::endl;
+//
+// }
+
 int main(int argc, char const *argv[]) {
 
     // Statistics
@@ -184,6 +248,9 @@ int main(int argc, char const *argv[]) {
             Statistics ILS_r("ILS_relief", name);
             Statistics SA("SA_random", name);
             Statistics SA_r("SA_relief", name);
+            Statistics DE("DE", name);
+            // Statistics Scatter("Scatter_random", name);
+            // Statistics Scatter_r("Scatter_relief", name);
 
             // Read dataset file
             std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
@@ -197,6 +264,9 @@ int main(int argc, char const *argv[]) {
                 statisticsILSRelief (ILS_r, name, i, ds, reliefV);
                 statisticsSARand (SA, name, i, ds);
                 statisticsSARelief (SA_r, name, i, ds, reliefV);
+                statisticsDERand (DE, name, i, ds);
+                // statisticsScatterRand(Scatter, name, i, ds);
+                // statisticsScatterRelief(Scatter_r, name, i, ds, reliefV);
             }
             // Average
             double ave_hits, ave_miss, ave_time;
@@ -219,6 +289,15 @@ int main(int argc, char const *argv[]) {
             ave_hits = SA_r.hits/NUM_PARTITIONS; ave_miss = SA_r.miss/NUM_PARTITIONS; ave_time = SA_r.time/NUM_PARTITIONS;
             SA_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
+            ave_hits = SA.hits/NUM_PARTITIONS; ave_miss = SA.miss/NUM_PARTITIONS; ave_time = SA.time/NUM_PARTITIONS;
+            SA.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            // ave_hits = Scatter.hits/NUM_PARTITIONS; ave_miss = Scatter.miss/NUM_PARTITIONS; ave_time = Scatter.time/NUM_PARTITIONS;
+            // Scatter.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+            //
+            // ave_hits = Scatter_r.hits/NUM_PARTITIONS; ave_miss = Scatter_r.miss/NUM_PARTITIONS; ave_time = Scatter_r.time/NUM_PARTITIONS;
+            // Scatter_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
             // Close all files
             noW.file.close();
             rel.file.close();
@@ -226,6 +305,9 @@ int main(int argc, char const *argv[]) {
             ILS_r.file.close();
             SA.file.close();
             SA_r.file.close();
+            DE.file.close();
+            // Scatter.file.close();
+            // Scatter_r.file.close();
         }
     }
     else {
@@ -254,12 +336,22 @@ int main(int argc, char const *argv[]) {
                     statisticsILSRelief (stats, name, i, ds, weights);
                 }
                 else if (strcmp(argv[1], "SA_random") == 0) {
-                    statisticsSARand (stats, name, i, ds);
+                    statisticsSARand(stats, name, i, ds);
                 }
                 else if (strcmp(argv[1], "SA_relief") == 0) {
                     std::vector<double> weights = relief(ds.first);
-                    statisticsSARelief (stats, name, i, ds, weights);
+                    statisticsSARelief(stats, name, i, ds, weights);
                 }
+                else if (strcmp(argv[1], "DE") == 0) {
+                    statisticsDERand(stats, name, i, ds);
+                }
+                // else if (strcmp(argv[1], "Scatter_random") == 0) {
+                //     statisticsScatterRand(stats, name, i, ds);
+                // }
+                // else if (strcmp(argv[1], "Scatter_relief") == 0) {
+                //     std::vector<double> weights = relief(ds.first);
+                //     statisticsScatterRelief(stats, name, i, ds, weights);
+                // }
             }
 
             // Average
