@@ -158,6 +158,13 @@ public:
 		return true;
 	}
 
+	bool operator!=(const APC_Instance &other) const {
+		return !(*this == other);
+	}
+
+	bool operator<(const APC_Instance &other) const {
+		return (weights[0] < other.weights[0]);
+	}
 
 };
 

@@ -15,6 +15,7 @@
 #include "NearestNeighbor.cpp"
 #include "ILS.hpp"
 #include "SimAnnealing.cpp"
+#include "scatter.cpp"
 
 int NUM_PARTITIONS = 5;
 int NUM_DATASETS = 4;

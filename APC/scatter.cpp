@@ -38,7 +38,7 @@ APC_Instance scatter(APC_Instance initial,
                             DataSet &testSet,
                             int popSize = 8,
                             int maxIterations = 300,
-                            int maxIterationsWithoutChange){
+                            int maxIterationsWithoutChange = 3){
 
     vector<APC_Instance> referenceSet (popSize);
 
@@ -62,8 +62,8 @@ APC_Instance scatter(APC_Instance initial,
         //generate the combinationsList
         combinationsListIndex = 0;
         for (int i = 0 ; i < popSize; i++){
-            combinationsList[combinationsListIndex] = make_pair(popSize[i].evaluate(trainingSet,testSet),
-                                                                popSize[i]);
+            combinationsList[combinationsListIndex] = make_pair(referenceSet[i].evaluate(trainingSet,testSet),
+                                                                referenceSet[i]);
             combinationsListIndex++;
         }
 
