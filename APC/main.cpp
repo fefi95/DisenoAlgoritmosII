@@ -195,46 +195,46 @@ void statisticsDERand(Statistics &stats,
 
 }
 
-// // Statistics Scatter random
-// void statisticsScatterRand(Statistics &stats,
-//                            int name,
-//                            int part,
-//                            std::pair<DataSet, DataSet> &ds ) {
-//
-//     std::cout << "Executing Scatter (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-//     timeStart = time(NULL);
-//     APC_Instance w(ds.first.nFeatures);
-//     APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
-//     nHits = weights.evaluate(ds.first, ds.second);
-//     timeEnd = time(NULL);
-//     timeElapsed = difftime(timeEnd, timeStart);
-//     nError = 100 - nHits;
-//     stats.update(nHits, nError, timeElapsed);
-//     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-//     std::cout << "done!" << std::endl;
-//
-// }
-//
-// // Statistics Scatter relief
-// void statisticsScatterRelief( Statistics &stats,
-//                               int name,
-//                               int part,
-//                               std::pair<DataSet, DataSet> &ds,
-//                               APC_Instance reliefV) {
-//
-//     std::cout << "Executing Scatter (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-//     timeStart = time(NULL);
-//     APC_Instance w(reliefV);
-//     APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
-//     nHits = weights.evaluate(ds.first, ds.second);
-//     timeEnd = time(NULL);
-//     timeElapsed = difftime(timeEnd, timeStart);
-//     nError = 100 - nHits;
-//     stats.update(nHits, nError, timeElapsed);
-//     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
-//     std::cout << "done!" << std::endl;
-//
-// }
+// Statistics Scatter random
+void statisticsScatterRand(Statistics &stats,
+                           int name,
+                           int part,
+                           std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing Scatter (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(ds.first.nFeatures);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// Statistics Scatter relief
+void statisticsScatterRelief( Statistics &stats,
+                              int name,
+                              int part,
+                              std::pair<DataSet, DataSet> &ds,
+                              APC_Instance reliefV) {
+
+    std::cout << "Executing Scatter (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(reliefV);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
 
 int main(int argc, char const *argv[]) {
 
@@ -249,8 +249,8 @@ int main(int argc, char const *argv[]) {
             Statistics SA("SA_random", name);
             Statistics SA_r("SA_relief", name);
             Statistics DE("DE", name);
-            // Statistics Scatter("Scatter_random", name);
-            // Statistics Scatter_r("Scatter_relief", name);
+            Statistics Scatter("Scatter_random", name);
+            Statistics Scatter_r("Scatter_relief", name);
 
             // Read dataset file
             std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
@@ -265,8 +265,8 @@ int main(int argc, char const *argv[]) {
                 statisticsSARand (SA, name, i, ds);
                 statisticsSARelief (SA_r, name, i, ds, reliefV);
                 statisticsDERand (DE, name, i, ds);
-                // statisticsScatterRand(Scatter, name, i, ds);
-                // statisticsScatterRelief(Scatter_r, name, i, ds, reliefV);
+                statisticsScatterRand(Scatter, name, i, ds);
+                statisticsScatterRelief(Scatter_r, name, i, ds, reliefV);
             }
             // Average
             double ave_hits, ave_miss, ave_time;
@@ -292,11 +292,11 @@ int main(int argc, char const *argv[]) {
             ave_hits = SA.hits/NUM_PARTITIONS; ave_miss = SA.miss/NUM_PARTITIONS; ave_time = SA.time/NUM_PARTITIONS;
             SA.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
-            // ave_hits = Scatter.hits/NUM_PARTITIONS; ave_miss = Scatter.miss/NUM_PARTITIONS; ave_time = Scatter.time/NUM_PARTITIONS;
-            // Scatter.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-            //
-            // ave_hits = Scatter_r.hits/NUM_PARTITIONS; ave_miss = Scatter_r.miss/NUM_PARTITIONS; ave_time = Scatter_r.time/NUM_PARTITIONS;
-            // Scatter_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+            ave_hits = Scatter.hits/NUM_PARTITIONS; ave_miss = Scatter.miss/NUM_PARTITIONS; ave_time = Scatter.time/NUM_PARTITIONS;
+            Scatter.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = Scatter_r.hits/NUM_PARTITIONS; ave_miss = Scatter_r.miss/NUM_PARTITIONS; ave_time = Scatter_r.time/NUM_PARTITIONS;
+            Scatter_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
             // Close all files
             noW.file.close();
@@ -345,13 +345,13 @@ int main(int argc, char const *argv[]) {
                 else if (strcmp(argv[1], "DE") == 0) {
                     statisticsDERand(stats, name, i, ds);
                 }
-                // else if (strcmp(argv[1], "Scatter_random") == 0) {
-                //     statisticsScatterRand(stats, name, i, ds);
-                // }
-                // else if (strcmp(argv[1], "Scatter_relief") == 0) {
-                //     std::vector<double> weights = relief(ds.first);
-                //     statisticsScatterRelief(stats, name, i, ds, weights);
-                // }
+                else if (strcmp(argv[1], "Scatter_random") == 0) {
+                    statisticsScatterRand(stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "Scatter_relief") == 0) {
+                    std::vector<double> weights = relief(ds.first);
+                    statisticsScatterRelief(stats, name, i, ds, weights);
+                }
             }
 
             // Average
