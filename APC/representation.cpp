@@ -137,8 +137,8 @@ public:
 									min((double)1,max(weights[i],Y.weights[i]) + alpha*diff));
 		}
 
-		children[0] = APC_Instance(firstChild);
-		children[1] = APC_Instance(secondChild);
+		children.push_back(APC_Instance(firstChild));
+		children.push_back(APC_Instance(secondChild));
 
 		return children;
 
