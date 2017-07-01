@@ -39,51 +39,66 @@ APC_Instance simulatedAnnealing(APC_Instance initial,
                             DataSet &testSet, 
                             int maxIterations = 300,
                             int initialTemperature = 100,
-                            int neighborsPerGen = 10){
+                            int neighborsPerGen = 10,
+                            double temperatureDecrease = 0.003){
+    printf("attributes maxIterations = %d, initialTemperature %d,neighborsPerGen %d, temperatureDecrease = %f \n",
+             maxIterations,initialTemperature,neighborsPerGen,temperatureDecrease);
+    double BestValue = initial.evaluate(trainingSet,testSet);
+    double currentValue = BestValue;
+    APC_Instance Best = initial;
+    APC_Instance current = initial;
 
-    double currentBestValue = initial.evaluate(trainingSet,testSet);
-    APC_Instance currentBest = initial;
     vector<APC_Instance> neighbors;
     bool change;
 
-    double temperature = 0;
-    double probAcceptance = 0;
-    double neighborValue = 0;
+    double temperature = initialTemperature;
+    double probAcceptance;
+    double neighborValue;
     double delta = 0;
     double random = 0;
-    for (int i = 0; i < maxIterations; ++i){
-        change = false;
-        neighbors = currentBest.genNeighbors(neighborsPerGen);
-        for (APC_Instance neighbor : neighbors){
-            neighborValue = neighbor.evaluate(trainingSet,testSet);
 
-            // If it's a better solution, change the current best one
-            if (neighborValue > currentBestValue){
-                currentBest = neighbor;
-                currentBestValue = neighborValue;
-                change = 1;
-            }
-            else{
-                // Otherwise, probabilities!.
-                // calculating the current temperature as t0/lg(it+1);
-                temperature = initialTemperature/log(i+1);
-                //calculating probability of acceptance (1/(1+exp(delta/temp)))
-                delta = currentBestValue - neighborValue;
-                probAcceptance = 1 / (1 + exp( delta / temperature));
-                // roll a dice from 0 to 1, assumes as random seed is set.
-                random = rand()/RAND_MAX;
+    for (int i = 0; i < maxIterations and temperature > 1; ++i){
+        change = true;
+        while(change){
+            change = false;
+            neighbors = current.genNeighbors(neighborsPerGen);
+            for (APC_Instance neighbor : neighbors){
+                neighborValue = neighbor.evaluate(trainingSet,testSet);
 
-                if (random <= probAcceptance){
-                    currentBest = neighbor;
-                    currentBestValue = neighborValue;
-                    change = 1;
+                // If it's a better solution, change the current best one
+                if (neighborValue > currentValue){
+                    //printf("Change from %f to %f, best is %f\n",currentValue,neighborValue, BestValue );
+                    current = neighbor;
+                    currentValue = neighborValue;
+                    change = true;
+                    if (neighborValue > BestValue){
+                        Best = neighbor;
+                        BestValue = neighborValue;
+                    }
+                }
+                else{
+                    // Otherwise, probabilities!.
+                    // calculating the current temperature as t0/lg(it+1);
+                    //calculating probability of acceptance (1/(1+exp(delta/temp)))
+                    delta = currentValue - neighborValue;
+                    probAcceptance = 1 / (1 + exp( 1+delta / temperature));
+                    // roll a dice from 0 to 1, assumes as random seed is set.
+                    random = (double)rand()/(double)RAND_MAX;
+
+                    if (random <= probAcceptance){
+                        current = neighbor;
+                        currentValue = neighborValue;
+                        change = true;
+                        //printf("prob %f rolled %f Temp Change from %f to %f, best is %f\n",probAcceptance,random,currentValue,neighborValue, BestValue );
+                    }
                 }
             }
         }
-
+        temperature = (double)initialTemperature/log(i+2);
+        //printf("temperature %f\n",temperature);
     }
 
-    return currentBest;
+    return Best;
 }
 
 
