@@ -15,6 +15,8 @@
 #include "NearestNeighbor.cpp"
 #include <algorithm>
 #include <stdlib.h> //random numbers.
+#include "seed.hpp"
+#include <random>
 
 using namespace std;
 
@@ -58,11 +60,14 @@ public:
 		int posToChange;
 		double delta;
 
+		//initialize a random generator
+		uniform_int_distribution<int> gen(0, nFeatures-1);
+
 		// initialize the neighbor with previous value
 		neighbor.assign(weights.begin(), weights.end());
 
 		// Make Changes
-		posToChange = rand() % nFeatures;
+		posToChange = gen(rng);
 		delta = dRand(-1,1);
 		neighbor[posToChange] += delta;
 
@@ -87,9 +92,13 @@ public:
 		int nFeatures = weights.size();
 		int posToChange;
 		double delta;
+
+		//initialize a random generator
+		uniform_int_distribution<int> gen(0, nFeatures-1);
+
 		for (int i = 0; i < numNeighbors; i++){
 			auxVect.assign(weights.begin(), weights.end());
-			posToChange = rand() % nFeatures;
+			posToChange = gen(rng);
 			delta = dRand(-1,1);
 			auxVect[posToChange] += delta;
 
@@ -108,10 +117,11 @@ public:
 		return neighbors;
 	}
 
-	APC_Instance perturbSolution(){
-		vector<APC_Instance> neighbor = this -> genNeighbors(1);
-		neighbor = neighbor[0].genNeighbors(1);
-		APC_Instance perturbation = neighbor[0];
+	APC_Instance perturbSolution(int numberOfFeaturesToPerturb = 2){
+		APC_Instance perturbation = this->genNeighbor();
+		for (int i = 1; i < numberOfFeaturesToPerturb; i++){
+			perturbation = perturbation.genNeighbor();
+		}
 		return perturbation;
 	}
 
@@ -137,8 +147,8 @@ public:
 									min((double)1,max(weights[i],Y.weights[i]) + alpha*diff));
 		}
 
-		children[0] = APC_Instance(firstChild);
-		children[1] = APC_Instance(secondChild);
+		children.push_back(APC_Instance(firstChild));
+		children.push_back(APC_Instance(secondChild));
 
 		return children;
 
