@@ -95,6 +95,8 @@ $$x_i = \langle f_1, f_2, \dots, f_n, c\rangle $$ en donde:
   \item $f_i$ : el valor de cada característica.
   \item $n$ : la cantidad de característcas.
   \item $c$ : la clase a la que pertenece dicha instancia, con $c \in C$.
+  \item $|X| = m$: cantidad de instancias.
+  \item $|C| = p$ : cantidad de clases.
 \end{itemize}
 
 Es común particionar $X$ en dos subconjuntos que representen el conjunto de
@@ -167,8 +169,9 @@ donde:
 \begin{itemize}
   \item $W = \langle w_1, \dots, w_n\rangle$ es una solución al problema.
   \item 1-NN es el clasificador k-NN con $k=1$ vecinos, generado a partir del
-  conjunto de datos inicial e incluyendo el peso de $W$ al momento de calcular 
-  las distancias.
+  conjunto de datos inicial. La distancia entre dos instancias se calculará 
+  con la distancia euclideana pesada: 
+  $$\sqrt{\sum_{i=1}^n (w_i * (x'_i - x''_i))^{2}}$$
   \item $X$ es el conjunto de datos sobre el que se evalúa el clasificador.
   \item $aciertos$ es la cantidad de instancias de $X$ clasificadas 
   correctamente por 1-NN.
@@ -189,6 +192,102 @@ Cada $w_i$ debe pertenecer al intervalo $[0,1]$; los valores cercanos a 1 indica
 que la característica es más importante. En caso de que algún valor quede fuera
 de este intervalo, se debe normalizar, seleccionando al máximo valor del vector
 y dividiendo todos los valores entre dicho número. 
+
+%------------------------------------------------------------------------------%
+%                             ALGORITMO RELIEF                                 %
+%------------------------------------------------------------------------------%
+\section{Algoritmo Relief}
+
+Es un algoritmo para escoger características inspirado en el aprendizaje basado 
+en instancias, detecta aquellos ejemplos que son estadísticamente relevantes 
+para el concepto objetivo en tiempo lineal ($\Theta(nmp)$). Utiliza un 
+\textit{threshold}, $\tau$ entre $0 \leq \tau \leq 1$ , que codifica la 
+relevancia de una característica en particular \cite{Kira_1992};  en esta 
+versión será omitido este parámetro puesto que las metaheurísticas utilizan el 
+vector de pesos y no el vector de relevancias que se obtiene con $\tau$.\\
+
+Relief utiliza la distancia euclideana $n$-dimensional para determinar el "amigo
+más cercano" y el "enemigo más cercano" de una instancia $x_i$. Se denomina a 
+una instancia "amigo más cercano" o "near-hit" a la instancia que pertenezca a 
+la misma clase de $x_i$ y se encuentre a menor distancia. Se denomina a una 
+instancia "enemigo más cercano" o "near-miss" a la instancia que pertenezca a 
+una clase diferente a $x_i$ y se encuentre a menor distancia \cite{Kira_1992}.
+
+\begin{algorithm}
+ \DontPrintSemicolon
+ \vspace*{0.1cm}
+ \KwIn{Conjunto de entrenamiento $X_e$}
+ \KwOut{Vector de pesos $W$}
+  W = {0, 0 \dots, 0}\;
+  \ForEach{$x_i \in X_e$}{
+   a = amigo\_mas\_cercano($x_i$);\;
+   e = enemigo\_mas\_cercano($x_i$);\;
+   \;
+   /* Actualizar pesos de $W$ */\;
+   \For{$i \dots n$}{
+    dif\_amigo = diferencia($x_i, a$);\;
+    dif\_enemigo = diferencia($x_i, e$);\;
+    $w_i$ = $w_i$ - dif\_amigo + dif\_enemigo;\;
+   }
+  }
+  normalizar($W$);\;
+ \KwRet{$W$}
+ \vspace*{0.1cm}
+ \caption{RELIEF}
+\end{algorithm}
+
+La diferencia entre el valor $x_i$ y el amigo/enemigo más cercano está definido 
+por: 
+- Para los atributos con valores numéricos:
+$$\text{diferencia}(a,b) = {(a - b)}^{2}$$
+- Para los atributos con valores nominales:
+\[
+\text{diferencia}(a,b) = 
+  \begin{cases}
+    0 & \text{son el iguales}\\
+    1 & \text{son diferentes}
+  \end{cases} 
+\]
+%------------------------------------------------------------------------------%
+%                              METAHEURÍSTICAS                                 %
+%------------------------------------------------------------------------------%
+
+\section{Metaheurísticas}
+
+Las soluciones a muchos problemas de optimización son intratables, es decir, obtener la mejor respuesta podría tomar un tiempo potencialmente infinito, no ser resoluble o no se dispone de la capacidad computacional suficiente para resolverlo. Las metaheurísticas constituyen un conjunto de estrategías para guiar heurísticas a encontrar soluciones aceptables en un tiempo razonable para resolver un problema difícil o del que no se dispone información completa \cite{Talbi_2009}. Usualmente poseen un componente estocástico, por lo que la solución depende de las variables aleatorias generadas y se describen los resultados basados en resultados empíricos. Existen tres tipos de metaheurísticas: de trayectoria, poblacionales e hibridas.\\
+
+En general, las meteheurísticas mejoran soluciones obtenidas anteriormentes. Sus componentes principales son:
+
+\begin{itemize}
+  \item Inicialización. Se requiere alguna solución inicial según la representación del problema particular, esta puede ser generada de manera aleatoria o utilizando algun algoritmo \textit{greedy}.
+  \item Operador de vecindad. Se debe disponer de un algortimo que, a partir de otra solución, genere un conjunto de soluciones "vecinas". Este operador puede entenderse como una pequeña perturbación en alguna componente de la representación utilizada.
+  \item Criterio de selección. Entre las soluciones que pertenecen a la vecindad, se debe escoger la "mejor". Existe diversas políticas, las más conocidas son: el mejor de toda la vecindad, el primer mejor y el mejor de una porción de la vecindad. La escogencia de algun criterio sobre otro depende del problema.
+  \item Criterio de convergencia. Al mejorar una solución a partir de la anterior, es necesario contar con algún mecanismo que permita detener la ejecución de la metaheurística y devolver alguna solución. Los más conocidos son: detenerse al encontrar el óptimo (si este es conocido), luego de un número fijo de iteraciones y luego de un número fijo de iteraciones sin cambiar la mejor solución.
+\end{itemize}
+
+\subsection{Metaheurísticas de trayectoria}
+
+Al resolver un problema de optimización, las metaheurísticas de trayectoria, utilizan una solución y realizan mejoras sobre esta, iterativamente; pueden ser entendidas como "caminatas" sobre el espacio de búsqueda del problema. Probablemente la metaherística de trayectoria más conocida es \textit{Local Search}, esta toma una solución inicial, encuentra sus vecinos y escoge el mejor según un criterio \cite{Talbi_2009}. 
+
+\subsubsection{Búsqueda Local Iterada (Iterated Local Search)}
+
+\textit{Local Search} podría quedar atrapado en un óptimo local y jamás llegar al global porque su intención es intensificar la búsqueda, por esta razón ILS supone una mejora sobre LS. Es una de las metaheurísticas más fáciles de implementar,
+primero se aplica LS a la solución inicial; luego, en cada iteración, se realiza una perturbación del óptimo local y se repite el proceso hasta un cumplir el criterio de aceptación \cite{Talbi_2009}.
+
+
+\subsubsection{Enfriamiento Simulado (Simulated annealing)}
+
+\subsection{Metaheurísticas poblacional}
+% POSIBLES METEHEURÍSTICAS
+\subsubsection{Algoritmo Genético}
+\subsubsection{Algoritmo Memético}
+
+%------------------------------------------------------------------------------%
+%                              IMPLEMENTACIÓN                                  %
+%------------------------------------------------------------------------------%
+
+\section{Implementación}
+*Inserte Implementación*
 
 %--------------------------- CONJUNTO DE DATOS --------------------------------%
 
@@ -244,54 +343,6 @@ problema APC se utilizarán cuatro librerias disponibles en
   
 \end{description}
 
-%------------------------------------------------------------------------------%
-%                             ALGORITMO RELIEF                                 %
-%------------------------------------------------------------------------------%
-
-\section{Algortimo RELIEF}
-
-\begin{algorithm}
- \DontPrintSemicolon
- \vspace*{0.1cm}
- \KwIn{Conjunto de entrenamiento $X_e$}
- \KwOut{Vector de pesos $W$}
-  W = {0, 0 \dots, 0}\;
-  \ForEach{$x_i \in X_e$}{
-   a = amigo\_mas\_cercano($x_i$);\;
-   e = enemigo\_mas\_cercano($x_i$);\;
-   \;
-   /* Actualizar pesos de $W$ */\;
-   \ForEach{$w_i \in W$}{
-    dif\_amigo = diferencia($w_i, a$);\;
-    dif\_enemigo = diferencia($w_i, e$);\;
-    $w_i$ = $w_i$ - dif\_amigo + dif\_enemigo;\;
-   }
-  }
-  normalizar($W$);\;
- \KwRet{$W$}
- \vspace*{0.1cm}
- \caption{RELIEF}
-\end{algorithm}
-
-%------------------------------------------------------------------------------%
-%                              METAHEURÍSTICAS                                 %
-%------------------------------------------------------------------------------%
-
-\section{Metaheurísticas}
-\subsection{Metaheurísticas de trayectoria}
-\subsubsection{Enfriamiento Simulado (Simulated annealing)}
-\subsubsection{Búsqueda Local Iterada (Iterated Local Search)}
-\subsection{Metaheurísticas poblacional}
-% POSIBLES METEHEURÍSTICAS
-\subsubsection{Algoritmo Genético}
-\subsubsection{Algoritmo Memético}
-
-%------------------------------------------------------------------------------%
-%                              IMPLEMENTACIÓN                                  %
-%------------------------------------------------------------------------------%
-
-\section{Implementación}
-*Inserte Implementación*
 
 %------------------------------------------------------------------------------%
 %                                RESULTADOS                                    %
@@ -299,6 +350,27 @@ problema APC se utilizarán cuatro librerias disponibles en
 
 \section{Resultados}
 *Inserte Resultados*\\
+\csvreader[
+  respect all, 
+  autotabular
+  ]{statistics/iris/no_weights.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[
+  respect all, 
+  autotabular
+  ]{statistics/sonar/no_weights.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[
+  respect all, 
+  autotabular
+  ]{statistics/spambase/no_weights.csv}{}{\csvlinetotablerow}%
+\\
+\csvreader[
+  respect all, 
+  autotabular
+  ]{statistics/wdbc/no_weights.csv}{}{\csvlinetotablerow}%
+\\
+RELIEF\\
 \csvreader[
   respect all, 
   autotabular
@@ -358,6 +430,10 @@ basadas en búsqueda local}, 2017. Disponible en:
 Hopkins, M. (1999). UCI Machine Learning Repository 
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
+
+\bibitem{Kira_1992}
+Kira, K., Rendell, A.
+\newblock A practical approach to feature selection, 1992.
 
 \bibitem{Mitchell_1997}
 Mitchell, T.
