@@ -23,6 +23,7 @@ int NUM_DATASETS = 4;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
 std::vector<int> maxIterations = {10, 150, 15, 2 };
 std::vector<int> neighborsPerGen = {8, 80, 10, 3 };
+std::vector<int> maxIterationsWithoutChange = {3, 3, 3, 3};
 std::vector<int> temperature = {3, 3, 5, 5 };
 std::vector<int> popSize = {5, 5, 5, 5 };
 std::vector<double> CR = {0.5, 0.5, 0.5, 0.5 };
@@ -103,7 +104,7 @@ void statisticsILSRand(Statistics &stats,
     std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = time(NULL);
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = time(NULL);
     timeElapsed = difftime(timeEnd, timeStart);
@@ -124,7 +125,7 @@ void statisticsILSRelief( Statistics &stats,
     std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = time(NULL);
     APC_Instance w(reliefV);
-    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], 2);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = time(NULL);
     timeElapsed = difftime(timeEnd, timeStart);

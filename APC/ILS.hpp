@@ -72,11 +72,11 @@ APC_Instance ILS_maxIter(APC_Instance initial,
  *
  */
 APC_Instance ILS_convergence(APC_Instance initial,
-                                 DataSet trainingSet,
-                                 DataSet testSet,
-                                 int maxIterations = 300,
-                                 int neighborsPerGen = 1,
-                                 int iterToStop = 2){
+                             DataSet &trainingSet,
+                             DataSet &testSet,
+                             int maxIterations = 300,
+                             int neighborsPerGen = 1,
+                             int maxIterationsWithoutChange = 10){
 
     APC_Instance solution = localSearch(initial,
                                         trainingSet,
@@ -90,26 +90,25 @@ APC_Instance ILS_convergence(APC_Instance initial,
     double oldValue = solution.evaluate(trainingSet, testSet);
     double bestValue = solution.evaluate(trainingSet, testSet);
     double newValue;
-    while (countIter != iterToStop) {
-        solution.perturbSolution();
+    while (countIter != maxIterationsWithoutChange) {
+        solution = solution.perturbSolution();
         solution = localSearch(initial,
                                trainingSet,
                                testSet,
                                maxIterations,
                                neighborsPerGen);
         newValue = solution.evaluate(trainingSet, testSet);
-        if (abs(oldValue - newValue) < 0.01 ) {
-            ++countIter;
-        }
-        else {
-            countIter = 0;
-        }
 
         // Keep current best solution
         if (bestValue < newValue ) {
             bestSol = solution;
             bestValue = newValue;
+            countIter = 0;
         }
+        else {
+            ++countIter;
+        }
+
         std::cout << "oldValue = " << oldValue << " newValue = " << newValue << std::endl;
         oldValue = newValue;
         ++totallIter;
