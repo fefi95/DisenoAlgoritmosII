@@ -23,7 +23,7 @@ using namespace std;
 // Function that returns a random double
 // TODO: Make proper documentation.
 double dRand(double minVal, double maxVal){
-    double aux = (double)rand() / RAND_MAX;
+    double aux = (double)rand() / (double)RAND_MAX;
     return minVal + aux * (maxVal - minVal);
 }
 
