@@ -13,17 +13,18 @@
 #include "dataset.hpp"
 #include "relief.hpp"
 #include "NearestNeighbor.cpp"
+#include "local_search.cpp"
 #include "ILS.hpp"
 #include "SimAnnealing.cpp"
 #include "scatter.cpp"
 #include "diffEvolution.cpp"
 
-int NUM_PARTITIONS = 5;
+int NUM_PARTITIONS = 2;
 int NUM_DATASETS = 4;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
-std::vector<int> maxIterations = {10, 150, 15, 2 };
-std::vector<int> neighborsPerGen = {8, 80, 10, 3 };
-std::vector<int> maxIterationsWithoutChange = {3, 3, 3, 3};
+std::vector<int> maxIterations = {100, 500, 150, 20 };
+std::vector<int> neighborsPerGen = {60, 450, 80, 15 };
+std::vector<int> maxIterationsWithoutChange = {4, 4, 4, 4};
 std::vector<int> temperature = {3, 3, 5, 5 };
 std::vector<int> popSize = {5, 5, 5, 5 };
 std::vector<double> CR = {0.5, 0.5, 0.5, 0.5 };
@@ -93,6 +94,47 @@ APC_Instance statisticsRelief( Statistics &stats,
     std::cout << "done!" << std::endl;
 
     return weights;
+}
+
+// Statistics ILS random
+void statisticsLSRand(Statistics &stats,
+                      int name,
+                      int part,
+                      std::pair<DataSet, DataSet> &ds ) {
+
+    std::cout << "Executing LS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(ds.first.nFeatures);
+    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
+}
+
+// Statistics LS relief
+void statisticsLSRelief( Statistics &stats,
+                          int name,
+                          int part,
+                          std::pair<DataSet, DataSet> &ds,
+                          APC_Instance reliefV) {
+
+    std::cout << "Executing LS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    timeStart = time(NULL);
+    APC_Instance w(reliefV);
+    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
+    nHits = weights.evaluate(ds.first, ds.second);
+    timeEnd = time(NULL);
+    timeElapsed = difftime(timeEnd, timeStart);
+    nError = 100 - nHits;
+    stats.update(nHits, nError, timeElapsed);
+    stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
+    std::cout << "done!" << std::endl;
+
 }
 
 // Statistics ILS random
@@ -245,6 +287,8 @@ int main(int argc, char const *argv[]) {
         for (int name = 0; name < NUM_DATASETS; ++name) {
             Statistics noW("no_weights", name);
             Statistics rel("relief", name);
+            Statistics LS("LS_random", name);
+            Statistics LS_r("LS_relief", name);
             Statistics ILS("ILS_random", name);
             Statistics ILS_r("ILS_relief", name);
             Statistics SA("SA_random", name);
@@ -261,6 +305,8 @@ int main(int argc, char const *argv[]) {
                 std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
                 statisticsNoWeight (noW, name, i, ds);
                 APC_Instance reliefV = statisticsRelief (rel, name, i, ds);
+                statisticsLSRand (ILS, name, i, ds);
+                statisticsLSRelief (ILS_r, name, i, ds, reliefV);
                 statisticsILSRand (ILS, name, i, ds);
                 statisticsILSRelief (ILS_r, name, i, ds, reliefV);
                 statisticsSARand (SA, name, i, ds);
@@ -277,6 +323,12 @@ int main(int argc, char const *argv[]) {
 
             ave_hits = rel.hits/NUM_PARTITIONS; ave_miss = rel.miss/NUM_PARTITIONS; ave_time = rel.time/NUM_PARTITIONS;
             rel.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = LS.hits/NUM_PARTITIONS; ave_miss = LS.miss/NUM_PARTITIONS; ave_time = LS.time/NUM_PARTITIONS;
+            LS.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+
+            ave_hits = LS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
+            LS_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
 
             ave_hits = ILS.hits/NUM_PARTITIONS; ave_miss = ILS.miss/NUM_PARTITIONS; ave_time = ILS.time/NUM_PARTITIONS;
             ILS.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
@@ -302,13 +354,15 @@ int main(int argc, char const *argv[]) {
             // Close all files
             noW.file.close();
             rel.file.close();
+            LS.file.close();
+            LS_r.file.close();
             ILS.file.close();
             ILS_r.file.close();
             SA.file.close();
             SA_r.file.close();
             DE.file.close();
-            // Scatter.file.close();
-            // Scatter_r.file.close();
+            Scatter.file.close();
+            Scatter_r.file.close();
         }
     }
     else {
@@ -328,6 +382,13 @@ int main(int argc, char const *argv[]) {
                 }
                 else if (strcmp(argv[1], "relief") == 0) {
                     APC_Instance reliefV = statisticsRelief (stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "LS_random") == 0) {
+                    statisticsLSRand(stats, name, i, ds);
+                }
+                else if (strcmp(argv[1], "LS_relief") == 0) {
+                    std::vector<double> weights = relief(ds.first);
+                    statisticsLSRelief(stats, name, i, ds, weights);
                 }
                 else if (strcmp(argv[1], "ILS_random") == 0) {
                     statisticsILSRand (stats, name, i, ds);
