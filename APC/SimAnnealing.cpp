@@ -17,7 +17,6 @@
 #include <math.h>
 #include <stdlib.h> //random
 
-
 using namespace std;
 
 /**
@@ -40,9 +39,7 @@ APC_Instance simulatedAnnealing(APC_Instance initial,
                             int maxIterations = 300,
                             int initialTemperature = 100,
                             int neighborsPerGen = 10,
-                            double temperatureDecrease = 0.003){
-    printf("attributes maxIterations = %d, initialTemperature %d,neighborsPerGen %d, temperatureDecrease = %f \n",
-             maxIterations,initialTemperature,neighborsPerGen,temperatureDecrease);
+                            int internalIterations = 10){
     double BestValue = initial.evaluate(trainingSet,testSet);
     double currentValue = BestValue;
     APC_Instance Best = initial;
@@ -59,7 +56,7 @@ APC_Instance simulatedAnnealing(APC_Instance initial,
 
     for (int i = 0; i < maxIterations and temperature > 1; ++i){
         change = true;
-        while(change){
+        for (int j = 0; j < internalIterations and change; ++j){
             change = false;
             neighbors = current.genNeighbors(neighborsPerGen);
             for (APC_Instance neighbor : neighbors){
@@ -94,7 +91,7 @@ APC_Instance simulatedAnnealing(APC_Instance initial,
                 }
             }
         }
-        temperature = (double)initialTemperature/log(i+2);
+        temperature = (double)initialTemperature/log(i+3);
         //printf("temperature %f\n",temperature);
     }
 
