@@ -36,14 +36,33 @@ maxIter, NumGen, maxIterWC, %Aciertos, Tiempo
 20, 15, 4, 87.7717, 1126
 
 SA random
-maxIter, NumGen, temp %Aciertos, Tiempo
-
+maxIter, NumGen, temp, estable, %Aciertos, Tiempo
+2, 2, 100, 100, 82.3913, 11.4089
+2, 4, 100, 100, 81.3043, 74.5867
+2, 8, 100, 100,
+2, 16, 100, 100,
+10, 2, 100, 100, 80.5707, 52.0373
+10, 4, 100, 100,
+10, 8, 100, 100,
+10, 16, 100, 100,
+15, 10, 100, 100
+20, 15, 100, 100
 
 SA relief
-maxIter, NumGen, temp %Aciertos, Tiempo
-
+maxIter, NumGen, temp, estable, %Aciertos, Tiempo
+2, 2, 100, 100, 76.7935, 19.0017
+2, 4, 100, 100, 78.0978, 44.2843
+2, 8, 100, 100,
+2, 16, 100, 100,
+10, 2, 100, 100, 79.0489, 47.2527
+10, 4, 100, 100,
+10, 8, 100, 100,
+10, 16, 100, 100,
+15, 10, 100, 100
+20, 15, 100, 100
 
 Scatter
+maxIter, popSize, maxIterWC, %Aciertos, Tiempo
 
 DE
 maxIter, popSize, CR, F, %Aciertos, Tiempo

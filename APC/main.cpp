@@ -21,16 +21,18 @@
 
 int NUM_PARTITIONS = 2;
 int NUM_DATASETS = 4;
-std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
-std::vector<int> maxIterations = {100, 500, 150, 20 };
-std::vector<int> neighborsPerGen = {60, 450, 80, 15 };
-std::vector<int> maxIterationsWithoutChange = {4, 4, 4, 4};
-std::vector<int> temperature = {3, 3, 5, 5 };
-std::vector<int> popSize = {5, 5, 5, 5 };
-std::vector<double> CR = {0.5, 0.5, 0.5, 0.5 };
-std::vector<double> F = {0.5, 0.5, 0.5, 0.5 };
-time_t timeStart;
-time_t timeEnd;
+std::vector<string> dataNames = { "iris", "sonar", "wdbc", "spambase" };
+std::vector<int> maxIterations = { 5, 250, 40, 10 };
+std::vector<int> neighborsPerGen = { 3, 80, 10, 3 };
+std::vector<int> neighborsPerGenSA = { 4, 4, 4, 4 };
+std::vector<int> maxIterationsWithoutChange = { 4, 4, 4, 4 };
+std::vector<int> temperature = { 100, 100, 100, 100 };
+std::vector<int> internalIter = { 100, 100, 100, 100 };
+std::vector<int> popSize = { 5, 5, 5, 5 };
+std::vector<double> CR = { 0.5, 0.5, 0.5, 0.5 };
+std::vector<double> F = { 0.5, 0.5, 0.5, 0.5 };
+clock_t timeStart;
+clock_t timeEnd;
 double timeElapsed;
 double nHits, nError;
 string header = "Particion, Aciertos(\%) , Error(\%), Tiempo(sg) ";
@@ -65,11 +67,11 @@ void statisticsNoWeight( Statistics &stats,
 
     std::cout << "Executing K-NN algorithm without weights on " << dataNames[name]
               << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     std::vector<double> weights(ds.first.nFeatures, 1.0);
     nHits = NN1(ds.first, ds.second, weights);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -83,11 +85,11 @@ APC_Instance statisticsRelief( Statistics &stats,
                                std::pair<DataSet, DataSet> &ds) {
 
     std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     std::vector<double> weights = relief(ds.first);
     nHits = NN1(ds.first, ds.second, weights);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -96,19 +98,19 @@ APC_Instance statisticsRelief( Statistics &stats,
     return weights;
 }
 
-// Statistics ILS random
+// Statistics LS random
 void statisticsLSRand(Statistics &stats,
                       int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing LS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
     APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -124,12 +126,12 @@ void statisticsLSRelief( Statistics &stats,
                           APC_Instance reliefV) {
 
     std::cout << "Executing LS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(reliefV);
     APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -144,12 +146,12 @@ void statisticsILSRand(Statistics &stats,
                       std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
     APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -165,12 +167,12 @@ void statisticsILSRelief( Statistics &stats,
                           APC_Instance reliefV) {
 
     std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(reliefV);
     APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -185,12 +187,12 @@ void statisticsSARand(Statistics &stats,
                       std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGen[name]);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGenSA[name], internalIter[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -206,12 +208,12 @@ void statisticsSARelief( Statistics &stats,
                           APC_Instance reliefV) {
 
     std::cout << "Executing SA (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGen[name]);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGenSA[name], internalIter[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -226,11 +228,11 @@ void statisticsDERand(Statistics &stats,
                       std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance weights = difEvolution(ds.first.nFeatures, ds.first, ds.second, popSize[name], CR[name], F[name], maxIterations[name], 2);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -245,12 +247,12 @@ void statisticsScatterRand(Statistics &stats,
                            std::pair<DataSet, DataSet> &ds ) {
 
     std::cout << "Executing Scatter (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
@@ -266,12 +268,12 @@ void statisticsScatterRelief( Statistics &stats,
                               APC_Instance reliefV) {
 
     std::cout << "Executing Scatter (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
-    timeStart = time(NULL);
+    timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], 2);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
-    timeEnd = time(NULL);
-    timeElapsed = difftime(timeEnd, timeStart);
+    timeEnd = clock();
+    timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
     stats.update(nHits, nError, timeElapsed);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
