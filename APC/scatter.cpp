@@ -17,6 +17,7 @@
 #include <math.h>
 #include <random>
 #include "seed.hpp"
+#include "local_search.cpp"
 #include <utility> //pairs
 #include <cstdio>
 using namespace std;
@@ -58,9 +59,9 @@ APC_Instance scatter(APC_Instance initial,
     int combinationsListIndex = 0;
     double bestSolution = initial.evaluate(trainingSet,testSet);
     int iterationsWithoutChange = 0;
-    int numberOfGoodSolutions = popSize/2;
-    int numberOfRandomSolutions = popSize - numberOfGoodSolutions;
-
+    int numberOfRandomSolutions = popSize/2;
+    int numberOfGoodSolutions = popSize - numberOfRandomSolutions;
+    APC_Instance lsChild;
     //Initialize the first positions of the combinationList
     for (int i = 0 ; i < popSize; i++){
         combinationsList[combinationsListIndex] = make_pair(referenceSet[i].evaluate(trainingSet,testSet),
@@ -76,8 +77,9 @@ APC_Instance scatter(APC_Instance initial,
             for (int j = i+1; j < popSize;j++){
                 children = referenceSet[i].blendAlphaCrossover(referenceSet[j]);
                 for (APC_Instance child: children){
-                    combinationsList[combinationsListIndex] = make_pair(child.evaluate(trainingSet,testSet),
-                                                    child);
+                    lsChild = localSearch(child,trainingSet,testSet);
+                    combinationsList[combinationsListIndex] = make_pair(lsChild.evaluate(trainingSet,testSet),
+                                                    lsChild);
                     combinationsListIndex++;
 
                 }
@@ -97,17 +99,18 @@ APC_Instance scatter(APC_Instance initial,
 
         //if we're above the maximum iterations without an improvement
         // end the loops.
+
         if (iterationsWithoutChange > maxIterationsWithoutChange){
             break;
         }
 
         // Refresh the referenceSet
         for (int i = 0; i < numberOfGoodSolutions; i++){
-            referenceSet[i] = combinationsList[i].second;
+            referenceSet[i] = combinationsList[combinationListSize - (i+1)].second;
         }
         // Generate random solutions to "spice it up"
         for (int i = numberOfGoodSolutions ; i < numberOfRandomSolutions;i++){
-            referenceSet[i] = APC_Instance(length);
+            referenceSet[i] = localSearch(APC_Instance(length),trainingSet,testSet);
         }
     }
 
