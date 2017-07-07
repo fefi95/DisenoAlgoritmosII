@@ -176,6 +176,21 @@ public:
 		return (weights[0] < other.weights[0]);
 	}
 
+
+	void normalize(){
+
+		double maximo = 0;
+		for (double i: weights){
+			maximo = max(i,maximo);
+		}
+
+
+		if (maximo <= 1) return;
+		for (int i; i < (int)weights.size(); i++){
+			weights[i] = weights[i]/maximo;
+		}
+	}
+
 };
 
 
