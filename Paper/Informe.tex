@@ -254,33 +254,132 @@ $$\text{diferencia}(a,b) = {(a - b)}^{2}$$
 
 \section{Metaheurísticas}
 
-Las soluciones a muchos problemas de optimización son intratables, es decir, obtener la mejor respuesta podría tomar un tiempo potencialmente infinito, no ser resoluble o no se dispone de la capacidad computacional suficiente para resolverlo. Las metaheurísticas constituyen un conjunto de estrategías para guiar heurísticas a encontrar soluciones aceptables en un tiempo razonable para resolver un problema difícil o del que no se dispone información completa \cite{Talbi_2009}. Usualmente poseen un componente estocástico, por lo que la solución depende de las variables aleatorias generadas y se describen los resultados basados en resultados empíricos. Existen tres tipos de metaheurísticas: de trayectoria, poblacionales e hibridas.\\
+Las soluciones a muchos problemas de optimización son intratables, es decir,
+obtener la mejor respuesta podría tomar un tiempo potencialmente infinito, no 
+ser resoluble o no se dispone de la capacidad computacional suficiente para
+resolverlo. Las metaheurísticas constituyen un conjunto de estrategías para 
+guiar heurísticas a encontrar soluciones aceptables en un tiempo razonable para
+resolver un problema difícil o del que no se dispone información completa
+\cite{Talbi_2009}. Usualmente poseen un componente estocástico, por lo que la
+solución depende de las variables aleatorias generadas y se describen los
+resultados basados en resultados empíricos. Existen tres tipos de 
+metaheurísticas: de trayectoria, poblacionales e hibridas.\\
 
-En general, las meteheurísticas mejoran soluciones obtenidas anteriormentes. Sus componentes principales son:
+En general, las meteheurísticas mejoran soluciones obtenidas anteriormentes. Sus
+componentes principales son:
 
 \begin{itemize}
-  \item Inicialización. Se requiere alguna solución inicial según la representación del problema particular, esta puede ser generada de manera aleatoria o utilizando algun algoritmo \textit{greedy}.
-  \item Operador de vecindad. Se debe disponer de un algortimo que, a partir de otra solución, genere un conjunto de soluciones "vecinas". Este operador puede entenderse como una pequeña perturbación en alguna componente de la representación utilizada.
-  \item Criterio de selección. Entre las soluciones que pertenecen a la vecindad, se debe escoger la "mejor". Existe diversas políticas, las más conocidas son: el mejor de toda la vecindad, el primer mejor y el mejor de una porción de la vecindad. La escogencia de algun criterio sobre otro depende del problema.
-  \item Criterio de convergencia. Al mejorar una solución a partir de la anterior, es necesario contar con algún mecanismo que permita detener la ejecución de la metaheurística y devolver alguna solución. Los más conocidos son: detenerse al encontrar el óptimo (si este es conocido), luego de un número fijo de iteraciones y luego de un número fijo de iteraciones sin cambiar la mejor solución.
+  \item Inicialización. Se requiere alguna solución inicial según la 
+  representación del problema particular, esta puede ser generada de manera
+  aleatoria o utilizando algun algoritmo \textit{greedy}.
+  \item Operador de vecindad. Se debe disponer de un algortimo que, a partir de
+  otra solución, genere un conjunto de soluciones "vecinas". Este operador puede
+  entenderse como una pequeña perturbación en alguna componente de la 
+  representación utilizada.
+  \item Criterio de selección. Entre las soluciones que pertenecen a la 
+  vecindad, se debe escoger la "mejor". Existe diversas políticas, las más
+  conocidas son: el mejor de toda la vecindad, el primer mejor y el mejor de una
+  porción de la vecindad. La escogencia de algun criterio sobre otro depende del
+  problema.
+  \item Criterio de convergencia. Al mejorar una solución a partir de la 
+  anterior, es necesario contar con algún mecanismo que permita detener la
+  ejecución de la metaheurística y devolver alguna solución. Los más conocidos
+  son: detenerse al encontrar el óptimo (si este es conocido), luego de un 
+  número fijo de iteraciones y luego de un número fijo de iteraciones sin 
+  cambiar la mejor solución.
 \end{itemize}
 
 \subsection{Metaheurísticas de trayectoria}
 
-Al resolver un problema de optimización, las metaheurísticas de trayectoria, utilizan una solución y realizan mejoras sobre esta, iterativamente; pueden ser entendidas como "caminatas" sobre el espacio de búsqueda del problema. Probablemente la metaherística de trayectoria más conocida es \textit{Local Search}, esta toma una solución inicial, encuentra sus vecinos y escoge el mejor según un criterio \cite{Talbi_2009}. 
+Al resolver un problema de optimización, las metaheurísticas de trayectoria,
+utilizan una solución y realizan mejoras sobre esta, iterativamente; pueden ser
+entendidas como "caminatas" sobre el espacio de búsqueda del problema. 
+Probablemente la metaherística de trayectoria más conocida es 
+\textit{Local Search}, esta toma una solución inicial, encuentra sus vecinos y
+escoge el mejor según un criterio \cite{Talbi_2009}. 
 
 \subsubsection{Búsqueda Local Iterada (Iterated Local Search)}
 
-\textit{Local Search} podría quedar atrapado en un óptimo local y jamás llegar al global porque su intención es intensificar la búsqueda, por esta razón ILS supone una mejora sobre LS. Es una de las metaheurísticas más fáciles de implementar,
-primero se aplica LS a la solución inicial; luego, en cada iteración, se realiza una perturbación del óptimo local y se repite el proceso hasta un cumplir el criterio de aceptación \cite{Talbi_2009}.
+\textit{Local Search} podría quedar atrapado en un óptimo local y jamás llegar al global ya que se encarga de intensificar la búsqueda, por esta razón ILS supone una mejora sobre LS. Es una de las metaheurísticas más fáciles de implementar, primero se aplica LS a la solución inicial; luego, en cada iteración, se realiza una perturbación del óptimo local y se repite el proceso hasta un cumplir el criterio de aceptación \cite{Talbi_2009}.
+
+%Algoritmo
+
+\subsubsection{Recocido Simulado (Simulated Annealing)}
+
+Su nombre proviene del proceso físico de recocer sólidos, en el que un sólido cristalino es calentado y luego se deja enfriar muy lentamente hasta que alcance su configuración más estable y estructuralmente superior, por lo tanto está libre de defectos del cristal \cite{Glover_2003}. En términos de resolver un problema de optimización, el sólido representa una solución, "calentarlo" es perturbar la solución hasta que la temperatura se estabilice y el "enfriamiento" es una función no-creciente.\\
+
+En cada iteración, Simulated Annealing, genera dos posibles soluciones: la actual y otra, las cuales son comparadas. Las soluciones que mejoren la actual son siempre aceptadas y existe una función que permite escoger alguna considerada "inferior" y así, escapar de un mínimo local. La probabilidad de aceptar una solución que no mejora depende de la temperatura, que típicamente es una función no-creciente en cada iteración del algoritmo y al aproximarse la temperatura a cero la probabilidad de aceptar una solución que no mejora es menor \cite{Glover_2003}. La temperatura sólo decrece cuando se ha alcanzado una condición de equilibrio.\\ 
+
+% Algoritmo
 
 
-\subsubsection{Enfriamiento Simulado (Simulated annealing)}
 
 \subsection{Metaheurísticas poblacional}
-% POSIBLES METEHEURÍSTICAS
-\subsubsection{Algoritmo Genético}
-\subsubsection{Algoritmo Memético}
+
+La mayoría de estos algoritmos están inspirados en fenómenos naturales y el
+comportamiento de los animales. Estas metaheurísticas toman una población
+inicial que está constituida por un conjunto de posibles soluciones del 
+problema. Luego, iterativamente, se generan nuevos individuos (soluciones) a
+través de "cruces" y mutaciones en los genes (componentes del vector), los 
+cuales son seleccionados para reemplazar a algunos de la actual población,
+creando una nueva. Este proceso se repite hasta alcanzar un criterio de 
+convergencia dado \cite{Talbi_2009}.\\ 
+
+Los cruces puede ser entendidos como una combinación de dos individuos de la
+población para crea unos nuevos, preservando algunas características de los
+originales. El operador de mutación efectúa una perturbación de un hijo 
+generado; el propósito de este es realizar variaciones en la población que
+permitan explorar nuevos lugares en el espacio de solución, es decir, 
+diversificar la búsqueda. 
+
+\subsubsection{Scatter Search}
+
+Es un metaheurística evolutiva y poblacional que recombina soluciones 
+seleccionadas de un "conjunto de referencia" para construir otras nuevas. El
+método comienza generando una población inicial cuyos individuos satisfacen un
+criterio de diversidad y calidad. El conjunto de referencia es construido
+seleccionando buenas representaciones de la población las cuales son combinadas
+para proveer otras iniciales y luego mejorarlas con procedimientos basados en
+metaheurísticas de trayectoria como \textit{Local Search}. De acuerdo con este
+procedimiento, el conjunto de referencia es actualizado para que contenga
+soluciones de buena calidad y otras que permitan diversificar la búsqueda. El
+proceso itera hasta que un criterio de parada se satisface \cite{Talbi_2009}.\\
+
+Scatter Search aprovecha la información proveída por una heurística para crear
+las soluciones "buenas" e intensificar la búsqueda alrededor de estos espacios. 
+
+% Algoritmo
+
+\subsubsection{Differential Evolution}
+
+Es un algoritmo evolutivo que genera su población inicial de manera aleatoria y
+con un tamaño mayor o igual a 4. Suele utilizarse para problemas de optimización
+contínuos pues cada individuo tiene componentes con números reales.\\ 
+
+El operador de cruce que utiliza está basado en la combinación líneal de las
+soluciones utilizando la distancia entre las mismas. Dado un padre $x$ y tres
+otro individuos seleccionados aleatoriamente $r1, r2$ y $r3$ se crea un nuevo
+vector $u = r1 + F(r2 - r3)$. $F$ representa un factor permite añadir un peso o
+importancia a la diferencia entre $r2$ y es tal que $r3$ y $F \in (0, 1)$
+\cite{Glover_2003}. Finalmente $u$ se combina con $x$, para crear $x'$, de la
+siguiente manera: 
+
+\[
+x'_i = 
+  \begin{cases}
+    u_i & \text{si } j < CR\\
+    x_i & \text{si } j \geq CR 
+  \end{cases} 
+\]
+
+donde: 
+\begin{itemize}
+  \item $CR \in (0,1)$ : un parámetro que representa la probabilidad.
+  \item $j$ : el número aleatorio entre 0 y 1 para escoger un componente u otro.
+  \item $1 \leq i \leq n $ : índice para cada característica.
+\end{itemize}
+
+% Algoritmo
 
 %------------------------------------------------------------------------------%
 %                              IMPLEMENTACIÓN                                  %
@@ -334,7 +433,7 @@ problema APC se utilizarán cuatro librerias disponibles en
   \cite{UCI_WDBC}.
 
   \item [Spam Base:] es una base de datos de detección de SPAM (correo basura)
-  frente a correo electrónico seguro. Cuenta de 460 ejemplos y 57 atributos en
+  frente a correo electrónico seguro. Cuenta de 4601 ejemplos y 57 atributos en
   donde los primeros 48 corresponden al porcentaje de frecuencia de una palabra
   en particular en un correo, 6 corresponden al porcentaje de frecuencia de
   símbolos de puntuación y las últimas 3 son el promedio, máximo y la suma de la
@@ -350,46 +449,46 @@ problema APC se utilizarán cuatro librerias disponibles en
 
 \section{Resultados}
 *Inserte Resultados*\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/iris/no_weights.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/sonar/no_weights.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/spambase/no_weights.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/wdbc/no_weights.csv}{}{\csvlinetotablerow}%
-\\
-RELIEF\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/iris/relief.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/sonar/relief.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/spambase/relief.csv}{}{\csvlinetotablerow}%
-\\
-\csvreader[
-  respect all, 
-  autotabular
-  ]{statistics/wdbc/relief.csv}{}{\csvlinetotablerow}%
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/iris/no_weights.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/sonar/no_weights.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/spambase/no_weights.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/wdbc/no_weights.csv}{}{\csvlinetotablerow}%
+%\\
+%RELIEF\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/iris/relief.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/sonar/relief.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/spambase/relief.csv}{}{\csvlinetotablerow}%
+%\\
+%\csvreader[
+%  respect all, 
+%  autotabular
+%  ]{statistics/wdbc/relief.csv}{}{\csvlinetotablerow}%
 
 %------------------------------------------------------------------------------%
 %                               CONCLUSIONES                                   %
@@ -418,6 +517,11 @@ reduction in KDD: an experimental study.
 Fisher, R.A. (1988). UCI Machine Learning Repository 
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/iris/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
+
+\bibitem{Glover_2003}
+Glover, F
+\newblock Handbook of metaheuristics. 
+\newblock {\em Operation resarch and management science}, 2003.
 
 \bibitem{Herrera_2017}
 Herrera, F.
