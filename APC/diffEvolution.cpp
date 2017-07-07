@@ -82,6 +82,7 @@ APC_Instance difEvolution(int lengthInstance,
                 else{
                     mutation.weights[k] = population[j].weights[k];
                 }
+                mutation.normalize();
             }
 
             // Compare mutation with original
