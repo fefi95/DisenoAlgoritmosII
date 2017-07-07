@@ -21,16 +21,37 @@
 
 int NUM_PARTITIONS = 2;
 int NUM_DATASETS = 4;
-std::vector<string> dataNames = { "iris", "sonar", "wdbc", "spambase" };
-std::vector<int> maxIterations = { 5, 250, 40, 10 };
+std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
+// std::vector<int> maxIterations = { 2, 150, 15, 2 };
+// std::vector<int> maxIterations = { 5, 250, 40, 10 };
+std::vector<int> maxIterations = { 10, 350, 50, 15 };
+// std::vector<int> maxIterations = { 50, 500, 100, 20 };
+// std::vector<int> maxIterations = { 100, 1, 150, 1 };
 std::vector<int> neighborsPerGen = { 3, 80, 10, 3 };
+// std::vector<int> neighborsPerGen = { 4, 150, 20, 5 };
+// std::vector<int> neighborsPerGen = { 8, 250, 30, 10 };
+// std::vector<int> neighborsPerGen = { 20, 450, 60, 15 };
+// std::vector<int> neighborsPerGen = { 60, 1, 80, 1 };
+// std::vector<int> neighborsPerGenSA = { 2, 2, 2, 2 };
 std::vector<int> neighborsPerGenSA = { 4, 4, 4, 4 };
-std::vector<int> maxIterationsWithoutChange = { 4, 4, 4, 4 };
-std::vector<int> temperature = { 100, 100, 100, 100 };
+// std::vector<int> neighborsPerGenSA = { 8, 8, 8, 8 };
+// std::vector<int> neighborsPerGenSA = { 16, 16, 16, 16 };
+// std::vector<int> maxIterationsWithoutChange = { 2, 2, 2, 2 };
+// std::vector<int> maxIterationsWithoutChange = { 4, 4, 4, 4 };
+std::vector<int> maxIterationsWithoutChange = { 6, 6, 6, 6 };
+// std::vector<int> maxIterationsWithoutChange = { 8, 8, 8, 8 };
+std::vector<int> temperature = { 50, 50, 50, 50 };
 std::vector<int> internalIter = { 100, 100, 100, 100 };
-std::vector<int> popSize = { 5, 5, 5, 5 };
+// std::vector<int> popSize = { 5, 5, 5, 5};
+std::vector<int> popSize = { 10, 10, 10, 10};
+// std::vector<int> popSize = { 20, 20, 20, 20};
+// std::vector<int> popSize = { 40, 40, 40, 40};
+// std::vector<double> CR = { 0.3, 0.3, 0.3, 0.3 };
 std::vector<double> CR = { 0.5, 0.5, 0.5, 0.5 };
-std::vector<double> F = { 0.5, 0.5, 0.5, 0.5 };
+// std::vector<double> CR = { 0.7, 0.7, 0.7, 0.7 };
+// std::vector<double> F = { 0.3, 0.3, 0.3, 0.3 };
+// std::vector<double> F = { 0.5, 0.5, 0.5, 0.5 };
+std::vector<double> F = { 0.7, 0.7, 0.7, 0.7 };
 clock_t timeStart;
 clock_t timeEnd;
 double timeElapsed;
@@ -43,19 +64,38 @@ public:
     double hits;
     double miss;
     double time;
+    APC_Instance solution;
 
-    Statistics(std::string fileName, int name){
+    Statistics(std::string fileName, int name, int size){
         file.open("../Paper/statistics/" + dataNames[name] + "/" + fileName + ".csv");
         file << header << std::endl;
         hits = 0;
         miss = 0;
         time = 0.0;
+        std::vector<double> fWeight(size, 0.0);
+        solution.weights = fWeight;
     };
 
-    void update(double nHits, double nMiss, double timeE) {
+    void update(double nHits, double nMiss, double timeE, APC_Instance &sol, int size) {
         hits += nHits;
         miss += nMiss;
         time += timeE;
+        for (int i = 0; i < size; ++i) {
+            solution.weights[i] += sol.weights[i];
+        }
+    }
+
+    void average(int size) {
+        this-> hits = this-> hits/NUM_PARTITIONS;
+        this-> miss = this-> miss/NUM_PARTITIONS;
+        this-> time = this-> time/NUM_PARTITIONS;
+        this-> file << "promedio, "  << this-> hits << ", " << this-> miss << ", " << this-> time << std::endl;;
+        this-> file << "solucion: [ ";
+        for (int i = 0; i < size-1; ++i) {
+            solution.weights[i] = solution.weights[i]/NUM_PARTITIONS;
+            this-> file << solution.weights[i] << ", ";
+        }
+        this-> file << solution.weights[size-1] << " ]" << std::endl;
     }
 };
 
@@ -73,7 +113,8 @@ void statisticsNoWeight( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    APC_Instance w(weights);
+    stats.update(nHits, nError, timeElapsed, w, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 }
@@ -91,7 +132,8 @@ APC_Instance statisticsRelief( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    APC_Instance w(weights);
+    stats.update(nHits, nError, timeElapsed, w, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -112,7 +154,7 @@ void statisticsLSRand(Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -133,7 +175,7 @@ void statisticsLSRelief( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -153,7 +195,7 @@ void statisticsILSRand(Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -174,7 +216,7 @@ void statisticsILSRelief( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -194,7 +236,7 @@ void statisticsSARand(Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -215,7 +257,7 @@ void statisticsSARelief( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -227,14 +269,14 @@ void statisticsDERand(Statistics &stats,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing DE (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance weights = difEvolution(ds.first.nFeatures, ds.first, ds.second, popSize[name], CR[name], F[name], maxIterations[name], 2);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -254,7 +296,7 @@ void statisticsScatterRand(Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -275,7 +317,7 @@ void statisticsScatterRelief( Statistics &stats,
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
     nError = 100 - nHits;
-    stats.update(nHits, nError, timeElapsed);
+    stats.update(nHits, nError, timeElapsed, weights, ds.first.nFeatures);
     stats.file << part << ", " << nHits << ", " << nError << ", " << timeElapsed << std::endl;
     std::cout << "done!" << std::endl;
 
@@ -287,21 +329,22 @@ int main(int argc, char const *argv[]) {
     if (strcmp(argv[1], "all") == 0) {
 
         for (int name = 0; name < NUM_DATASETS; ++name) {
-            Statistics noW("no_weights", name);
-            Statistics rel("relief", name);
-            Statistics LS("LS_random", name);
-            Statistics LS_r("LS_relief", name);
-            Statistics ILS("ILS_random", name);
-            Statistics ILS_r("ILS_relief", name);
-            Statistics SA("SA_random", name);
-            Statistics SA_r("SA_relief", name);
-            Statistics DE("DE", name);
-            Statistics Scatter("Scatter_random", name);
-            Statistics Scatter_r("Scatter_relief", name);
-
             // Read dataset file
             std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
             DataSet dataset = readFile(dsFile.c_str());
+
+            Statistics noW("no_weights", name, dataset.nFeatures);
+            Statistics rel("relief", name, dataset.nFeatures);
+            Statistics LS("LS_random", name, dataset.nFeatures);
+            Statistics LS_r("LS_relief", name, dataset.nFeatures);
+            Statistics ILS("ILS_random", name, dataset.nFeatures);
+            Statistics ILS_r("ILS_relief", name, dataset.nFeatures);
+            Statistics SA("SA_random", name, dataset.nFeatures);
+            Statistics SA_r("SA_relief", name, dataset.nFeatures);
+            Statistics DE("DE", name, dataset.nFeatures);
+            Statistics Scatter("Scatter_random", name, dataset.nFeatures);
+            Statistics Scatter_r("Scatter_relief", name, dataset.nFeatures);
+
 
             for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
                 std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
@@ -317,41 +360,17 @@ int main(int argc, char const *argv[]) {
                 statisticsScatterRand(Scatter, name, i, ds);
                 statisticsScatterRelief(Scatter_r, name, i, ds, reliefV);
             }
-            // Average
-            double ave_hits, ave_miss, ave_time;
-
-            ave_hits = noW.hits/NUM_PARTITIONS; ave_miss = noW.miss/NUM_PARTITIONS; ave_time = noW.time/NUM_PARTITIONS;
-            noW.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = rel.hits/NUM_PARTITIONS; ave_miss = rel.miss/NUM_PARTITIONS; ave_time = rel.time/NUM_PARTITIONS;
-            rel.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = LS.hits/NUM_PARTITIONS; ave_miss = LS.miss/NUM_PARTITIONS; ave_time = LS.time/NUM_PARTITIONS;
-            LS.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = LS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
-            LS_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = ILS.hits/NUM_PARTITIONS; ave_miss = ILS.miss/NUM_PARTITIONS; ave_time = ILS.time/NUM_PARTITIONS;
-            ILS.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = ILS_r.hits/NUM_PARTITIONS; ave_miss = ILS_r.miss/NUM_PARTITIONS; ave_time = ILS_r.time/NUM_PARTITIONS;
-            ILS_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = SA.hits/NUM_PARTITIONS; ave_miss = SA.miss/NUM_PARTITIONS; ave_time = SA.time/NUM_PARTITIONS;
-            SA.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = SA_r.hits/NUM_PARTITIONS; ave_miss = SA_r.miss/NUM_PARTITIONS; ave_time = SA_r.time/NUM_PARTITIONS;
-            SA_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = SA.hits/NUM_PARTITIONS; ave_miss = SA.miss/NUM_PARTITIONS; ave_time = SA.time/NUM_PARTITIONS;
-            SA.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = Scatter.hits/NUM_PARTITIONS; ave_miss = Scatter.miss/NUM_PARTITIONS; ave_time = Scatter.time/NUM_PARTITIONS;
-            Scatter.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
-
-            ave_hits = Scatter_r.hits/NUM_PARTITIONS; ave_miss = Scatter_r.miss/NUM_PARTITIONS; ave_time = Scatter_r.time/NUM_PARTITIONS;
-            Scatter_r.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+            noW.average(dataset.nFeatures);
+            rel.average(dataset.nFeatures);
+            LS.average(dataset.nFeatures);
+            LS_r.average(dataset.nFeatures);
+            ILS.average(dataset.nFeatures);
+            ILS_r.average(dataset.nFeatures);
+            SA.average(dataset.nFeatures);
+            SA_r.average(dataset.nFeatures);
+            DE.average(dataset.nFeatures);
+            Scatter.average(dataset.nFeatures);
+            Scatter_r.average(dataset.nFeatures);
 
             // Close all files
             noW.file.close();
@@ -369,12 +388,11 @@ int main(int argc, char const *argv[]) {
     }
     else {
         for (int name = 0; name < NUM_DATASETS; ++name) {
-
-            Statistics stats(argv[1], name);
-
             // Read dataset file
             std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
             DataSet dataset = readFile(dsFile.c_str());
+
+            Statistics stats(argv[1], name, dataset.nFeatures);
 
             for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
                 std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
@@ -418,12 +436,16 @@ int main(int argc, char const *argv[]) {
                 }
             }
 
-            // Average
-            double ave_hits, ave_miss, ave_time;
-
-            ave_hits = stats.hits/NUM_PARTITIONS; ave_miss = stats.miss/NUM_PARTITIONS; ave_time = stats.time/NUM_PARTITIONS;
-            stats.file << "promedio, "  << ave_hits << ", " << ave_miss << ", " << ave_time << std::endl;
+            stats.average(dataset.nFeatures);
             stats.file.close();
+
+            std::cout << "maxIter, popSize, CR, F, Aciertos, Tiempo" << std::endl;
+            std::cout << maxIterations[name] << ", " << popSize[name] << ", " << CR[name] << ", " << F[name] << ", ";
+            // std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
+            // std::cout << maxIterations[name] << ", " << popSize[name] << ", " << maxIterationsWithoutChange[name] << ", ";
+            // std::cout << std::endl << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
+            // std::cout << maxIterations[name] << ", " << neighborsPerGenSA[name] << ", " << temperature[name] << ", " << internalIter[name] << ", ";
+            std::cout << stats.hits << ", " << stats.time << std::endl << std::endl;
         }
     }
     return 0;
