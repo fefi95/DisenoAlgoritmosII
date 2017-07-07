@@ -20,7 +20,7 @@
 #include "diffEvolution.cpp"
 
 int NUM_PARTITIONS = 2;
-int NUM_DATASETS = 4;
+int NUM_DATASETS = 1;
 std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
 // std::vector<int> maxIterations = { 2, 150, 15, 2 };
 // std::vector<int> maxIterations = { 5, 250, 40, 10 };
@@ -95,7 +95,7 @@ public:
             solution.weights[i] = solution.weights[i]/NUM_PARTITIONS;
             this-> file << solution.weights[i] << ", ";
         }
-        this-> file << solution.weights[size-1] << " ]" << std::endl;
+        this-> file << solution.weights[size-1]/NUM_PARTITIONS << " ]" << std::endl;
     }
 };
 
@@ -350,8 +350,8 @@ int main(int argc, char const *argv[]) {
                 std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
                 statisticsNoWeight (noW, name, i, ds);
                 APC_Instance reliefV = statisticsRelief (rel, name, i, ds);
-                statisticsLSRand (ILS, name, i, ds);
-                statisticsLSRelief (ILS_r, name, i, ds, reliefV);
+                statisticsLSRand (LS, name, i, ds);
+                statisticsLSRelief (LS_r, name, i, ds, reliefV);
                 statisticsILSRand (ILS, name, i, ds);
                 statisticsILSRelief (ILS_r, name, i, ds, reliefV);
                 statisticsSARand (SA, name, i, ds);

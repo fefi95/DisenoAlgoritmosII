@@ -115,6 +115,7 @@ APC_Instance ILS_convergence(APC_Instance initial,
     }
 
     std::cout << "total number of iterations: " << totallIter << std::endl;
+    bestSol.normalize();
     return bestSol;
 }
 

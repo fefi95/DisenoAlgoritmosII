@@ -186,7 +186,7 @@ public:
 
 
 		if (maximo <= 1) return;
-		for (int i; i < (int)weights.size(); i++){
+		for (int i = 0; i < (int)weights.size(); i++){
 			weights[i] = weights[i]/maximo;
 		}
 	}
