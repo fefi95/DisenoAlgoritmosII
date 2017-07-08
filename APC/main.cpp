@@ -304,6 +304,7 @@ void statisticsScatterRelief( Statistics &stats,
 int main(int argc, char const *argv[]) {
 
     ifstream file(argv[1]);
+    ofstream fileOut("output");
 
     if(file.is_open()) {
 
@@ -319,70 +320,71 @@ int main(int argc, char const *argv[]) {
             }
             std::string function;
             file >> function;
+            fileOut << name << " " << function << std::endl;
 
             if (function.compare("LS_random") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
-                std::cout << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", ";
+                fileOut << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", ";
             }
             else if (function.compare("LS_relief") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
-                std::cout << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", ";
+                fileOut << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", ";
             }
             else if (function.compare("ILS_random") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
                 file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
+                fileOut << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
             }
             else if (function.compare("ILS_relief") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
                 file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
+                fileOut << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
             }
             else if (function.compare("SA_random") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
                 file >> temperature;
                 file >> internalIter;
-                std::cout << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
+                fileOut << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
             }
             else if (function.compare("SA_relief") == 0) {
                 file >> maxIterations;
                 file >> neighborsPerGen;
                 file >> temperature;
                 file >> internalIter;
-                std::cout << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
+                fileOut << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
             }
             else if (function.compare("DE") == 0) {
                 file >> maxIterations;
                 file >> popSize;
                 file >> CR;
                 file >> F;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << CR << ", " << F << ", ";
+                fileOut << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << popSize << ", " << CR << ", " << F << ", ";
             }
             else if (function.compare("Scatter_random") == 0) {
                 file >> maxIterations;
                 file >> popSize;
                 file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
+                fileOut << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
             }
             else if (function.compare("Scatter_relief") == 0) {
                 file >> maxIterations;
                 file >> popSize;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
                 file >> maxIterationsWithoutChange;
+                fileOut << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
+                fileOut << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
             }
 
             // Read dataset file
@@ -435,7 +437,7 @@ int main(int argc, char const *argv[]) {
 
             stats.average(dataset.nFeatures);
             stats.file.close();
-            std::cout << stats.hits << ", " << stats.time << std::endl;
+            fileOut << stats.hits << ", " << stats.time << std::endl << std::endl;
         }
     }
 
