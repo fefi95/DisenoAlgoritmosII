@@ -1,0 +1,37 @@
+2
+iris LS_random 2 3
+iris LS_relief 2 3
+iris ILS_random 2 3 3
+iris ILS_relief 2 3 3
+iris SA_random 2 2 100 100
+iris SA_relief 2 2 100 100
+iris DE 350 10 0.5 0.7
+iris Scatter_random 2 5 8
+iris Scatter_relief 2 5 8
+sonar LS_random 2 3
+sonar LS_relief 2 3
+sonar ILS_random 2 3 3
+sonar ILS_relief 2 3 3
+sonar SA_random 2 2 100 100
+sonar SA_relief 2 2 100 100
+sonar DE 350 10 0.5 0.7
+sonar Scatter_random 2 5 8
+sonar Scatter_relief 2 5 8
+wdbc LS_random 2 3
+wdbc LS_relief 2 3
+wdbc ILS_random 2 3 3
+wdbc ILS_relief 2 3 3
+wdbc SA_random 2 2 100 100
+wdbc SA_relief 2 2 100 100
+wdbc DE 3 10 0.5 0.7
+wdbc Scatter_random 2 5 8
+wdbc Scatter_relief 2 5 8
+spambase LS_random 2 3
+spambase LS_relief 2 3
+spambase ILS_random 2 3 3
+spambase ILS_relief 2 3 3
+spambase SA_random 2 2 100 100
+spambase SA_relief 2 2 100 100
+spambase DE 2 10 0.5 0.7
+spambase Scatter_random 2 5 8
+spambase Scatter_relief 2 5 8

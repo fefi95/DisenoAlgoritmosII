@@ -21,9 +21,37 @@
 
 int NUM_PARTITIONS = 2;
 int NUM_DATASETS = 1;
-int maxIterations, neighborsPerGen, maxIterationsWithoutChange = 0;
-int temperature, internalIter, popSize = 0;
-double CR, F = 0.0;
+std::vector<string> dataNames = {"iris", "sonar", "wdbc", "spambase" };
+// std::vector<int> maxIterations = { 2, 150, 15, 2 };
+// std::vector<int> maxIterations = { 5, 250, 40, 10 };
+std::vector<int> maxIterations = { 10, 350, 50, 15 };
+// std::vector<int> maxIterations = { 50, 500, 100, 20 };
+// std::vector<int> maxIterations = { 100, 1, 150, 1 };
+std::vector<int> neighborsPerGen = { 3, 80, 10, 3 };
+// std::vector<int> neighborsPerGen = { 4, 150, 20, 5 };
+// std::vector<int> neighborsPerGen = { 8, 250, 30, 10 };
+// std::vector<int> neighborsPerGen = { 20, 450, 60, 15 };
+// std::vector<int> neighborsPerGen = { 60, 1, 80, 1 };
+// std::vector<int> neighborsPerGenSA = { 2, 2, 2, 2 };
+std::vector<int> neighborsPerGenSA = { 4, 4, 4, 4 };
+// std::vector<int> neighborsPerGenSA = { 8, 8, 8, 8 };
+// std::vector<int> neighborsPerGenSA = { 16, 16, 16, 16 };
+// std::vector<int> maxIterationsWithoutChange = { 2, 2, 2, 2 };
+// std::vector<int> maxIterationsWithoutChange = { 4, 4, 4, 4 };
+std::vector<int> maxIterationsWithoutChange = { 6, 6, 6, 6 };
+// std::vector<int> maxIterationsWithoutChange = { 8, 8, 8, 8 };
+std::vector<int> temperature = { 50, 50, 50, 50 };
+std::vector<int> internalIter = { 100, 100, 100, 100 };
+// std::vector<int> popSize = { 5, 5, 5, 5};
+std::vector<int> popSize = { 10, 10, 10, 10};
+// std::vector<int> popSize = { 20, 20, 20, 20};
+// std::vector<int> popSize = { 40, 40, 40, 40};
+// std::vector<double> CR = { 0.3, 0.3, 0.3, 0.3 };
+std::vector<double> CR = { 0.5, 0.5, 0.5, 0.5 };
+// std::vector<double> CR = { 0.7, 0.7, 0.7, 0.7 };
+// std::vector<double> F = { 0.3, 0.3, 0.3, 0.3 };
+// std::vector<double> F = { 0.5, 0.5, 0.5, 0.5 };
+std::vector<double> F = { 0.7, 0.7, 0.7, 0.7 };
 clock_t timeStart;
 clock_t timeEnd;
 double timeElapsed;
@@ -38,8 +66,8 @@ public:
     double time;
     APC_Instance solution;
 
-    Statistics(std::string fileName, std::string name, int size){
-        file.open("../Paper/statistics/" + name + "/" + fileName + ".csv");
+    Statistics(std::string fileName, int name, int size){
+        file.open("../Paper/statistics/" + dataNames[name] + "/" + fileName + ".csv");
         file << header << std::endl;
         hits = 0;
         miss = 0;
@@ -73,11 +101,11 @@ public:
 
 // Statistics without weights
 void statisticsNoWeight( Statistics &stats,
-                         std::string name,
+                         int name,
                          int part,
                          std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing K-NN algorithm without weights on " << name
+    std::cout << "Executing K-NN algorithm without weights on " << dataNames[name]
               << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     std::vector<double> weights(ds.first.nFeatures, 1.0);
@@ -93,11 +121,11 @@ void statisticsNoWeight( Statistics &stats,
 
 // Statistics RELIEF
 APC_Instance statisticsRelief( Statistics &stats,
-                               std::string name,
+                               int name,
                                int part,
                                std::pair<DataSet, DataSet> &ds) {
 
-    std::cout << "Executing RELIEF algorithm on " << name << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing RELIEF algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     std::vector<double> weights = relief(ds.first);
     nHits = NN1(ds.first, ds.second, weights);
@@ -114,14 +142,14 @@ APC_Instance statisticsRelief( Statistics &stats,
 
 // Statistics LS random
 void statisticsLSRand(Statistics &stats,
-                      std::string name,
+                      int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing LS (random) algorithm on " << name << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing LS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations, neighborsPerGen);
+    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -134,15 +162,15 @@ void statisticsLSRand(Statistics &stats,
 
 // Statistics LS relief
 void statisticsLSRelief( Statistics &stats,
-                          std::string name,
+                          int name,
                           int part,
                           std::pair<DataSet, DataSet> &ds,
                           APC_Instance reliefV) {
 
-    std::cout << "Executing LS (RELIEF) algorithm on " << name << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing LS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations, neighborsPerGen);
+    APC_Instance weights = localSearch(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -155,14 +183,14 @@ void statisticsLSRelief( Statistics &stats,
 
 // Statistics ILS random
 void statisticsILSRand(Statistics &stats,
-                      std::string name,
+                      int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing ILS (random) algorithm on " << name << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing ILS (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations, neighborsPerGen, maxIterationsWithoutChange);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -175,16 +203,15 @@ void statisticsILSRand(Statistics &stats,
 
 // Statistics ILS relief
 void statisticsILSRelief( Statistics &stats,
-                          std::string name,
+                          int name,
                           int part,
                           std::pair<DataSet, DataSet> &ds,
                           APC_Instance reliefV) {
 
-    std::cout << "Executing ILS (RELIEF) algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing ILS (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations, neighborsPerGen, maxIterationsWithoutChange);
+    APC_Instance weights = ILS_convergence(w, ds.first, ds.second, maxIterations[name], neighborsPerGen[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -197,15 +224,14 @@ void statisticsILSRelief( Statistics &stats,
 
 // Statistics SA random
 void statisticsSARand(Statistics &stats,
-                      std::string name,
+                      int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing SA (random) algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing SA (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations, temperature, neighborsPerGen, internalIter);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGenSA[name], internalIter[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -218,16 +244,15 @@ void statisticsSARand(Statistics &stats,
 
 // Statistics SA relief
 void statisticsSARelief( Statistics &stats,
-                          std::string name,
+                          int name,
                           int part,
                           std::pair<DataSet, DataSet> &ds,
                           APC_Instance reliefV) {
 
-    std::cout << "Executing SA (RELIEF) algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing SA (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations, temperature, neighborsPerGen, internalIter);
+    APC_Instance weights = simulatedAnnealing(w, ds.first, ds.second, maxIterations[name], temperature[name], neighborsPerGenSA[name], internalIter[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -240,14 +265,13 @@ void statisticsSARelief( Statistics &stats,
 
 // Statistics DE random
 void statisticsDERand(Statistics &stats,
-                      std::string name,
+                      int name,
                       int part,
                       std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing DE algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing DE (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
-    APC_Instance weights = difEvolution(ds.first.nFeatures, ds.first, ds.second, popSize, CR, F, maxIterations, 2);
+    APC_Instance weights = difEvolution(ds.first.nFeatures, ds.first, ds.second, popSize[name], CR[name], F[name], maxIterations[name], 2);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -260,15 +284,14 @@ void statisticsDERand(Statistics &stats,
 
 // Statistics Scatter random
 void statisticsScatterRand(Statistics &stats,
-                           std::string name,
+                           int name,
                            int part,
                            std::pair<DataSet, DataSet> &ds ) {
 
-    std::cout << "Executing Scatter (random) algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing Scatter (random) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(ds.first.nFeatures);
-    APC_Instance weights = scatter(w, ds.first, ds.second, popSize, maxIterations, maxIterationsWithoutChange);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -281,16 +304,15 @@ void statisticsScatterRand(Statistics &stats,
 
 // Statistics Scatter relief
 void statisticsScatterRelief( Statistics &stats,
-                              std::string name,
+                              int name,
                               int part,
                               std::pair<DataSet, DataSet> &ds,
                               APC_Instance reliefV) {
 
-    std::cout << "Executing Scatter (RELIEF) algorithm on " << name
-              << " dataset (" << part << ")" << std::endl;
+    std::cout << "Executing Scatter (RELIEF) algorithm on " << dataNames[name] << " dataset (" << part << ")" << std::endl;
     timeStart = clock();
     APC_Instance w(reliefV);
-    APC_Instance weights = scatter(w, ds.first, ds.second, popSize, maxIterations, maxIterationsWithoutChange);
+    APC_Instance weights = scatter(w, ds.first, ds.second, popSize[name], maxIterations[name], maxIterationsWithoutChange[name]);
     nHits = weights.evaluate(ds.first, ds.second);
     timeEnd = clock();
     timeElapsed = difftime(timeEnd, timeStart)/CLOCKS_PER_SEC;
@@ -303,131 +325,112 @@ void statisticsScatterRelief( Statistics &stats,
 
 int main(int argc, char const *argv[]) {
 
-    ifstream file(argv[1]);
+    // Statistics
+    if (strcmp(argv[1], "all") == 0) {
 
-    if(file.is_open()) {
-
-        std::string line;
-        file >> NUM_PARTITIONS;
-
-        while( !file.eof() ) {
-            // Read file
-            std::string name;
-            file >> name;
-            if (name.compare("") == 0) {
-                return 0;
-            }
-            std::string function;
-            file >> function;
-
-            if (function.compare("LS_random") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                std::cout << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", ";
-            }
-            else if (function.compare("LS_relief") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                std::cout << "maxIter, NumGen, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", ";
-            }
-            else if (function.compare("ILS_random") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
-            }
-            else if (function.compare("ILS_relief") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, NumGen, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << maxIterationsWithoutChange << ", ";
-            }
-            else if (function.compare("SA_random") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                file >> temperature;
-                file >> internalIter;
-                std::cout << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
-            }
-            else if (function.compare("SA_relief") == 0) {
-                file >> maxIterations;
-                file >> neighborsPerGen;
-                file >> temperature;
-                file >> internalIter;
-                std::cout << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << neighborsPerGen << ", " << temperature << ", " << internalIter << ", ";
-            }
-            else if (function.compare("DE") == 0) {
-                file >> maxIterations;
-                file >> popSize;
-                file >> CR;
-                file >> F;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << CR << ", " << F << ", ";
-            }
-            else if (function.compare("Scatter_random") == 0) {
-                file >> maxIterations;
-                file >> popSize;
-                file >> maxIterationsWithoutChange;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
-            }
-            else if (function.compare("Scatter_relief") == 0) {
-                file >> maxIterations;
-                file >> popSize;
-                std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
-                std::cout << maxIterations << ", " << popSize << ", " << maxIterationsWithoutChange << ", ";
-                file >> maxIterationsWithoutChange;
-            }
-
+        for (int name = 0; name < NUM_DATASETS; ++name) {
             // Read dataset file
-            std::string dsFile = "datasets/" + name + "/" + name + ".data";
+            std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
             DataSet dataset = readFile(dsFile.c_str());
 
-            Statistics stats(function.c_str(), name, dataset.nFeatures);
+            Statistics noW("no_weights", name, dataset.nFeatures);
+            Statistics rel("relief", name, dataset.nFeatures);
+            Statistics LS("LS_random", name, dataset.nFeatures);
+            Statistics LS_r("LS_relief", name, dataset.nFeatures);
+            Statistics ILS("ILS_random", name, dataset.nFeatures);
+            Statistics ILS_r("ILS_relief", name, dataset.nFeatures);
+            Statistics SA("SA_random", name, dataset.nFeatures);
+            Statistics SA_r("SA_relief", name, dataset.nFeatures);
+            Statistics DE("DE", name, dataset.nFeatures);
+            Statistics Scatter("Scatter_random", name, dataset.nFeatures);
+            Statistics Scatter_r("Scatter_relief", name, dataset.nFeatures);
+
+
+            for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
+                std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
+                statisticsNoWeight (noW, name, i, ds);
+                APC_Instance reliefV = statisticsRelief (rel, name, i, ds);
+                statisticsLSRand (LS, name, i, ds);
+                statisticsLSRelief (LS_r, name, i, ds, reliefV);
+                statisticsILSRand (ILS, name, i, ds);
+                statisticsILSRelief (ILS_r, name, i, ds, reliefV);
+                statisticsSARand (SA, name, i, ds);
+                statisticsSARelief (SA_r, name, i, ds, reliefV);
+                statisticsDERand (DE, name, i, ds);
+                statisticsScatterRand(Scatter, name, i, ds);
+                statisticsScatterRelief(Scatter_r, name, i, ds, reliefV);
+            }
+            noW.average(dataset.nFeatures);
+            rel.average(dataset.nFeatures);
+            LS.average(dataset.nFeatures);
+            LS_r.average(dataset.nFeatures);
+            ILS.average(dataset.nFeatures);
+            ILS_r.average(dataset.nFeatures);
+            SA.average(dataset.nFeatures);
+            SA_r.average(dataset.nFeatures);
+            DE.average(dataset.nFeatures);
+            Scatter.average(dataset.nFeatures);
+            Scatter_r.average(dataset.nFeatures);
+
+            // Close all files
+            noW.file.close();
+            rel.file.close();
+            LS.file.close();
+            LS_r.file.close();
+            ILS.file.close();
+            ILS_r.file.close();
+            SA.file.close();
+            SA_r.file.close();
+            DE.file.close();
+            Scatter.file.close();
+            Scatter_r.file.close();
+        }
+    }
+    else {
+        for (int name = 0; name < NUM_DATASETS; ++name) {
+            // Read dataset file
+            std::string dsFile = "datasets/" + dataNames[name] + "/" + dataNames[name] + ".data";
+            DataSet dataset = readFile(dsFile.c_str());
+
+            Statistics stats(argv[1], name, dataset.nFeatures);
 
             for (int i = 1; i < NUM_PARTITIONS + 1; ++i) {
                 std::pair<DataSet, DataSet> ds = dataset.makePartition(i*10, 0.6);
 
-                if (function.compare("no_weights") == 0) {
+                if (strcmp(argv[1], "no_weights") == 0) {
                     statisticsNoWeight (stats, name, i, ds);
                 }
-                else if (function.compare("relief") == 0) {
+                else if (strcmp(argv[1], "relief") == 0) {
                     APC_Instance reliefV = statisticsRelief (stats, name, i, ds);
                 }
-                else if (function.compare("LS_random") == 0) {
+                else if (strcmp(argv[1], "LS_random") == 0) {
                     statisticsLSRand(stats, name, i, ds);
                 }
-                else if (function.compare("LS_relief") == 0) {
+                else if (strcmp(argv[1], "LS_relief") == 0) {
                     std::vector<double> weights = relief(ds.first);
                     statisticsLSRelief(stats, name, i, ds, weights);
                 }
-                else if (function.compare("ILS_random") == 0) {
+                else if (strcmp(argv[1], "ILS_random") == 0) {
                     statisticsILSRand (stats, name, i, ds);
                 }
-                else if (function.compare("ILS_relief") == 0) {
+                else if (strcmp(argv[1], "ILS_relief") == 0) {
                     std::vector<double> weights = relief(ds.first);
                     statisticsILSRelief (stats, name, i, ds, weights);
                 }
-                else if (function.compare("SA_random") == 0) {
+                else if (strcmp(argv[1], "SA_random") == 0) {
                     statisticsSARand(stats, name, i, ds);
                 }
-                else if (function.compare("SA_relief") == 0) {
+                else if (strcmp(argv[1], "SA_relief") == 0) {
                     std::vector<double> weights = relief(ds.first);
                     statisticsSARelief(stats, name, i, ds, weights);
                 }
-                else if (function.compare("DE") == 0) {
+                else if (strcmp(argv[1], "DE") == 0) {
                     statisticsDERand(stats, name, i, ds);
                 }
-                else if (function.compare("Scatter_random") == 0) {
+                else if (strcmp(argv[1], "Scatter_random") == 0) {
                     statisticsScatterRand(stats, name, i, ds);
                 }
-                else if (function.compare("Scatter_relief") == 0) {
+                else if (strcmp(argv[1], "Scatter_relief") == 0) {
                     std::vector<double> weights = relief(ds.first);
                     statisticsScatterRelief(stats, name, i, ds, weights);
                 }
@@ -435,10 +438,15 @@ int main(int argc, char const *argv[]) {
 
             stats.average(dataset.nFeatures);
             stats.file.close();
-            std::cout << stats.hits << ", " << stats.time << std::endl;
+
+            std::cout << "maxIter, popSize, CR, F, Aciertos, Tiempo" << std::endl;
+            std::cout << maxIterations[name] << ", " << popSize[name] << ", " << CR[name] << ", " << F[name] << ", ";
+            // std::cout << "maxIter, popSize, maxIterWC, Aciertos, Tiempo" << std::endl;
+            // std::cout << maxIterations[name] << ", " << popSize[name] << ", " << maxIterationsWithoutChange[name] << ", ";
+            // std::cout << std::endl << "maxIter, NumGen, temp, estable, Aciertos, Tiempo" << std::endl;
+            // std::cout << maxIterations[name] << ", " << neighborsPerGenSA[name] << ", " << temperature[name] << ", " << internalIter[name] << ", ";
+            std::cout << stats.hits << ", " << stats.time << std::endl << std::endl;
         }
     }
-
-    file.close();
     return 0;
 }
