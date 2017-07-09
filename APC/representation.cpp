@@ -179,15 +179,21 @@ public:
 
 	void normalize(){
 
-		double maximo = 0;
+		double maxWeight = 0;
 		for (double i: weights){
-			maximo = max(i,maximo);
+			maxWeight = max(i,maxWeight);
 		}
 
 
-		if (maximo <= 1) return;
+		if (maxWeight <= 1) return;
 		for (int i = 0; i < (int)weights.size(); i++){
-			weights[i] = weights[i]/maximo;
+			weights[i] = weights[i]/maxWeight;
+		}
+	}
+
+	void normalize(double maxWeight){
+		for (int i = 0; i < (int)weights.size(); i++){
+			weights[i] = weights[i]/maxWeight;
 		}
 	}
 

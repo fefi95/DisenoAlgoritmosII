@@ -62,7 +62,7 @@ APC_Instance difEvolution(int lengthInstance,
     double rIndex;
     int iterWithNoChange = 0;
     bool change = 0;
-
+    double maxMember;
     for (int i = 0; i < maxIterations; ++i){
         change = 0;
 
@@ -78,13 +78,16 @@ APC_Instance difEvolution(int lengthInstance,
                 if (rIndex < CR){
                     mutation.weights[k] = population[r1].weights[k] + 
                         F*(population[r2].weights[k] - population[r3].weights[k]);
+                    maxMember = max(maxMember,mutation.weights[k]);
                 }
                 else{
                     mutation.weights[k] = population[j].weights[k];
+                    maxMember = max(maxMember,mutation.weights[k]);
                 }
-                mutation.normalize();
             }
-
+            if (maxMember > 1){
+                mutation.normalize(maxMember);                
+            }
             // Compare mutation with original
             if (mutation.evaluate(trainingSet,testSet) > population[j].evaluate(trainingSet,testSet)){
                 population[j] = mutation;
