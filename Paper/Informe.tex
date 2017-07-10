@@ -101,18 +101,18 @@ $$x_i = \langle f_1, f_2, \dots, f_n, c\rangle $$ en donde:
 \end{itemize}
 
 Es común particionar $X$ en dos subconjuntos que representen el conjunto de
-entrenamiento y el de prueba, $X_e$ y $X_p$ respectivamente. $X_e$ es utilizado 
+entrenamiento y el de prueba, $X_e$ y $X_p$ respectivamente. $X_e$ es utilizado
 para que el algoritmo aprenda los parámetros que le permitan clasificar
-correctamente todas sus instancias y así, utilizar $X_p$ para validar los 
+correctamente todas sus instancias y así, utilizar $X_p$ para validar los
 resultados obtenidos.\\
 
 El problema del Aprendizaje de Pesos en Características consiste en optimizar el
-rendimiento de un clasificador, a partir de la inclusión de pesos asociados a 
+rendimiento de un clasificador, a partir de la inclusión de pesos asociados a
 las características del conjunto de datos. Los pesos ponderan la relevancia de
 cada característica y modifican su valor al momento de calcular las distancias
 entre instancias, de tal forma que los clasificadores que se construyan a partir
-de estos, sean más certeros y/o más rápidos. En este caso en particular, el 
-clasificador considerado será el \textit{K-Nearest Neighbor} (K-vecinos más 
+de estos, sean más certeros y/o más rápidos. En este caso en particular, el
+clasificador considerado será el \textit{K-Nearest Neighbor} (K-vecinos más
 cercanos) con $K=1$ (1-NN).\\
 
 El algoritmo K-NN asume que todas las instancias corresponden a puntos en un
@@ -140,11 +140,11 @@ siguiente:
 \end{algorithm}
 
 El proceso de aprendizaje de este clasificador consiste en almacenar una tabla
-con las instancias correspondientes al $X_e$ junto a la clase asociada a cada 
+con las instancias correspondientes al $X_e$ junto a la clase asociada a cada
 uno de ellos. Dado una instancia $x_i \in X_p$, se calcula su distancia a todas
 las otras que pertenecen al conjunto de entrenamiento y se escogen las $k$ más
 cercanas \cite{Herrera_2017}; usualmente se determina la proximidad entre dos
-ejemplos utilizando la distancia Euclideana. Finalmente, $x_i$ se clasifica  
+ejemplos utilizando la distancia Euclideana. Finalmente, $x_i$ se clasifica
 según la clase mayoritaria grupo y se retorna el conjunto de pruebas clasificado.
 %ORDEN DE K-NN
 
@@ -152,7 +152,7 @@ según la clase mayoritaria grupo y se retorna el conjunto de pruebas clasificad
 
 \subsection{Función objetivo}
 
-Al ser APC un problema de optimización, es necesario establecer cuál es la 
+Al ser APC un problema de optimización, es necesario establecer cuál es la
 función que se desea mejorar. En este caso, dadas las características del
 problema, resulta evidente que obtener una "buena" solución está fuertemente
 relacionado con la cantidad de instancias clasificadas correctamiente usando
@@ -172,9 +172,9 @@ donde:
 \begin{itemize}
   \item $W = \langle w_1, \dots, w_n\rangle$ es una solución al problema.
   \item 1-NN es el clasificador k-NN con $k=1$ vecinos, generado a partir del
-  conjunto de datos inicial. 
+  conjunto de datos inicial.
   \item $X$ es el conjunto de datos sobre el cual se evalúa el clasificador.
-  \item $aciertos$ es la cantidad de instancias de $X$ clasificadas 
+  \item $aciertos$ es la cantidad de instancias de $X$ clasificadas
   correctamente por 1-NN.
   \item $total$ es la cantidad total de instancias de $X$.
 \end{itemize}
@@ -183,7 +183,7 @@ donde:
 
 \subsection{Representación de la solución}
 
-La solución al problema de Aprendizaje de Pesos en Características viene dado 
+La solución al problema de Aprendizaje de Pesos en Características viene dado
 por $W = \langle w_1, \dots, w_n\rangle$, un vector de números reales de tamaño
 $n$ (cantidad de características) en el que el valor de cada $w_i$  define el
 peso que pondera a la  característica $f_i$, es decir, representa que tan
@@ -192,34 +192,34 @@ importante es para distinguir a que clase pertenece un ejemplo.\\
 Cada $w_i$ debe pertenecer al intervalo $[0,1]$; los valores cercanos a 1 indican
 que la característica es más importante. En caso de que algún valor quede fuera
 de este intervalo, se debe normalizar, seleccionando el máximo valor del vector
-y dividiendo todos los valores entre dicho número. 
+y dividiendo todos los valores entre dicho número.
 
 %------------------------------------------------------------------------------%
 %                             ALGORITMO RELIEF                                 %
 %------------------------------------------------------------------------------%
 \section{Algoritmo Relief}
 
-Las metaheurísticas suelen ser inicializadas con soluciones generadas 
-aleatoriamente, sin embargo, esto puede producir un retardo en la ejecución o 
-desembocar en una convergencia prematura en un óptimo local, por lo que se 
-requiere de un algoritmo eficiente que tome información del problema y guie las 
-búsqueda de manera inteligente. Para el problema considerado en este artículo, 
+Las metaheurísticas suelen ser inicializadas con soluciones generadas
+aleatoriamente, sin embargo, esto puede producir un retardo en la ejecución o
+desembocar en una convergencia prematura en un óptimo local, por lo que se
+requiere de un algoritmo eficiente que tome información del problema y guie las
+búsqueda de manera inteligente. Para el problema considerado en este artículo,
 existe tal heurística: Relief.\\
 
-Relief, es un algoritmo de selección de características inspirado en el 
-aprendizaje basado en instancias, detecta aquellos ejemplos que son 
-estadísticamente relevantes para el concepto objetivo en tiempo lineal 
-($\Theta(nmp)$). Utiliza un \textit{threshold}, $\tau$ entre 
-$0 \leq \tau \leq 1$ , que codifica la relevancia de una característica en 
+Relief, es un algoritmo de selección de características inspirado en el
+aprendizaje basado en instancias, detecta aquellos ejemplos que son
+estadísticamente relevantes para el concepto objetivo en tiempo lineal
+($\Theta(nmp)$). Utiliza un \textit{threshold}, $\tau$ entre
+$0 \leq \tau \leq 1$ , que codifica la relevancia de una característica en
 particular \cite{Kira_1992};  en esta versión será omitido este parámetro puesto
-que las metaheurísticas utilizan el vector de pesos y no el vector de 
+que las metaheurísticas utilizan el vector de pesos y no el vector de
 relevancias que se obtiene con $\tau$.\\
 
 Relief utiliza la distancia euclideana $n$-dimensional para determinar el "amigo
-más cercano" y el "enemigo más cercano" de una instancia $x_i$. Se denomina a 
-una instancia "amigo más cercano" o "near-hit" a la instancia que pertenezca a 
-la misma clase de $x_i$ y se encuentre a menor distancia. Se denomina a una 
-instancia "enemigo más cercano" o "near-miss" a la instancia que pertenezca a 
+más cercano" y el "enemigo más cercano" de una instancia $x_i$. Se denomina a
+una instancia "amigo más cercano" o "near-hit" a la instancia que pertenezca a
+la misma clase de $x_i$ y se encuentre a menor distancia. Se denomina a una
+instancia "enemigo más cercano" o "near-miss" a la instancia que pertenezca a
 una clase diferente a $x_i$ y se encuentre a menor distancia \cite{Kira_1992}.
 
 \begin{algorithm}
@@ -245,17 +245,17 @@ una clase diferente a $x_i$ y se encuentre a menor distancia \cite{Kira_1992}.
  \caption{Relief}
 \end{algorithm}
 
-La diferencia entre el valor $x_i$ y el amigo/enemigo más cercano está definido 
+La diferencia entre el valor $x_i$ y el amigo/enemigo más cercano está definido
 por: \\
 - Para los atributos con valores numéricos:
 $$\text{diferencia}(a,b) = {(a - b)}^{2}$$
 - Para los atributos con valores nominales:
 \[
-\text{diferencia}(a,b) = 
+\text{diferencia}(a,b) =
   \begin{cases}
     0 & \text{son el iguales}\\
     1 & \text{son diferentes}
-  \end{cases} 
+  \end{cases}
 \]
 %------------------------------------------------------------------------------%
 %                              METAHEURÍSTICAS                                 %
@@ -264,39 +264,39 @@ $$\text{diferencia}(a,b) = {(a - b)}^{2}$$
 \section{Metaheurísticas}
 
 Las soluciones a muchos problemas de optimización son intratables, es decir,
-obtener la mejor respuesta podría tomar un tiempo potencialmente infinito, no 
+obtener la mejor respuesta podría tomar un tiempo potencialmente infinito, no
 ser resoluble o no se dispone de la capacidad computacional suficiente para
-resolverlo. Las metaheurísticas constituyen un conjunto de estrategías para 
-guiar heurísticas en la tarea de encontrar soluciones aceptables en un tiempo 
-razonable para resolver un problema difícil o del que no se dispone información 
-completa \cite{Talbi_2009}. Usualmente poseen un componente estocástico, por lo 
+resolverlo. Las metaheurísticas constituyen un conjunto de estrategías para
+guiar heurísticas en la tarea de encontrar soluciones aceptables en un tiempo
+razonable para resolver un problema difícil o del que no se dispone información
+completa \cite{Talbi_2009}. Usualmente poseen un componente estocástico, por lo
 que la solución depende de las variables aleatorias generadas y se describen los
-resultados basados en observaciones empíricas. Existen tres tipos de 
+resultados basados en observaciones empíricas. Existen tres tipos de
 metaheurísticas: de trayectoria, poblacionales e hibridas.\\
 
 En general, las meteheurísticas mejoran soluciones obtenidas anteriormente. Sus
 componentes principales son:
 
 \begin{itemize}
-  \item Inicialización. Se requiere alguna solución inicial según la 
+  \item Inicialización. Se requiere alguna solución inicial según la
   representación del problema particular, esta puede ser generada de manera
   aleatoria o utilizando algún algoritmo \textit{greedy}.
   \item Operador de vecindad. Se debe disponer de un algortimo que, a partir de
   otra solución, genere un conjunto de soluciones "vecinas". Este operador puede
-  entenderse como una pequeña perturbación en alguna componente de la 
+  entenderse como una pequeña perturbación en alguna componente de la
   representación utilizada.
-  \item Criterio de selección. Entre las soluciones que pertenecen a la 
+  \item Criterio de selección. Entre las soluciones que pertenecen a la
   vecindad, se debe escoger la "mejor". Existen diversas políticas, las más
   conocidas son: el mejor de toda la vecindad, el primer mejor y el mejor de una
   porción de la vecindad. Escoger algún criterio sobre otro depende del
   problema.
-  \item Criterio de convergencia. Al mejorar una solución a partir de la 
+  \item Criterio de convergencia. Al mejorar una solución a partir de la
   anterior, es indispensable contar con algún mecanismo que permita detener la
   ejecución de la metaheurística y devolver alguna solución. Los más conocidos
-  son: detenerse al encontrar el óptimo (si este es conocido), luego de un 
-  número fijo de iteraciones y luego de un número fijo de iteraciones sin 
+  son: detenerse al encontrar el óptimo (si este es conocido), luego de un
+  número fijo de iteraciones y luego de un número fijo de iteraciones sin
   modificar la mejor solución.
-  
+
 \end{itemize}
 
 %--------------------- Metaheurísticas de trayectoria -------------------------%
@@ -305,10 +305,10 @@ componentes principales son:
 
 Al resolver un problema de optimización, las metaheurísticas de trayectoria,
 utilizan una solución y realizan mejoras sobre esta, iterativamente; pueden ser
-entendidas como "caminatas" sobre el espacio de búsqueda del problema. 
-Probablemente la metaheurística de trayectoria más conocida es 
+entendidas como "caminatas" sobre el espacio de búsqueda del problema.
+Probablemente la metaheurística de trayectoria más conocida es
 Local Search, que toma una solución inicial, encuentra sus vecinos y
-escoge el mejor según un criterio \cite{Talbi_2009}. 
+escoge el mejor según un criterio \cite{Talbi_2009}.
 
 \begin{algorithm}
  \DontPrintSemicolon
@@ -362,22 +362,22 @@ solución inicial; luego, en cada iteración, se realiza una perturbación del
 
 \subsubsection{Recocido Simulado (Simulated Annealing)}
 
-Su nombre proviene del proceso físico de recocer sólidos, en el que un sólido 
+Su nombre proviene del proceso físico de recocer sólidos, en el que un sólido
 cristalino es calentado y luego se deja enfriar muy lentamente hasta que alcance
-su configuración más estable y estructuralmente superior, por lo tanto está 
-libre de defectos del cristal \cite{Glover_2003}. En términos de resolver un 
-problema de optimización, el sólido representa una solución, "calentarlo" es 
+su configuración más estable y estructuralmente superior, por lo tanto está
+libre de defectos del cristal \cite{Glover_2003}. En términos de resolver un
+problema de optimización, el sólido representa una solución, "calentarlo" es
 perturbar la solución hasta que la temperatura se estabilice y el "enfriamiento"
 es una función no-creciente.\\
 
 En cada iteración, Simulated Annealing, genera dos posibles soluciones: la
-actual y otra, las cuales son comparadas. Aquellas que mejoren la actual 
+actual y otra, las cuales son comparadas. Aquellas que mejoren la actual
 son siempre aceptadas; también existe una función probabilística dependiente de
 la temperatura que permite aceptar alguna solución considerada "inferior" y así,
 escapar de un mínimo local. Típicamente es una función no-creciente en cada
 iteración del algoritmo y al aproximarse la temperatura a cero la probabilidad
-de aceptar una solución que no mejora es menor \cite{Glover_2003}. La 
-temperatura sólo decrece cuando se ha alcanzado una condición de equilibrio.\\ 
+de aceptar una solución que no mejora es menor \cite{Glover_2003}. La
+temperatura sólo decrece cuando se ha alcanzado una condición de equilibrio.\\
 
 \begin{algorithm}
  \DontPrintSemicolon
@@ -415,25 +415,25 @@ temperatura sólo decrece cuando se ha alcanzado una condición de equilibrio.\\
 
 La mayoría de estos algoritmos están inspirados en fenómenos naturales y el
 comportamiento de los animales. Estas metaheurísticas toman una población
-inicial que está constituida por un conjunto de posibles soluciones del 
+inicial que está constituida por un conjunto de posibles soluciones del
 problema. Luego, iterativamente, se generan nuevos individuos (soluciones) a
-través de "cruces" y mutaciones en los genes (componentes del vector), los 
+través de "cruces" y mutaciones en los genes (componentes del vector), los
 cuales son seleccionados para reemplazar a algunos de la actual población,
-creando una nueva. Este proceso se repite hasta alcanzar un criterio de 
-convergencia dado \cite{Talbi_2009}.\\ 
+creando una nueva. Este proceso se repite hasta alcanzar un criterio de
+convergencia dado \cite{Talbi_2009}.\\
 
 Los cruces puede ser entendidos como una combinación de dos individuos de la
 población para crea otros nuevos, preservando algunas características de los
-originales. El operador de mutación efectúa una perturbación de un hijo 
+originales. El operador de mutación efectúa una perturbación de un hijo
 generado; el propósito de este es realizar variaciones en la población que
-permitan explorar nuevos lugares en el espacio de solución, es decir, 
-diversificar la búsqueda. 
+permitan explorar nuevos lugares en el espacio de solución, es decir,
+diversificar la búsqueda.
 
 %------------------------------- Scatter Search -------------------------------%
 
 \subsubsection{Scatter Search}
 
-Es un metaheurística evolutiva y poblacional que recombina soluciones 
+Es un metaheurística evolutiva y poblacional que recombina soluciones
 seleccionadas de un "conjunto de referencia" para construir otras nuevas. El
 método comienza generando una población inicial cuyos individuos satisfacen un
 criterio de diversidad y calidad. El conjunto de referencia es construido
@@ -442,10 +442,10 @@ otras iniciales y luego mejorarlas con procedimientos basados en metaheurística
 de trayectoria como Local Search. De acuerdo con esto, el conjunto de referencia
 es actualizado para que contenga soluciones de buena calidad y otras que
 permitan diversificar la búsqueda. El proceso itera hasta que un criterio de
-parada se satisface \cite{Talbi_2009}.\\ 
+parada se satisface \cite{Talbi_2009}.\\
 
 Scatter Search aprovecha la información proveída por una heurística para crear
-las soluciones "buenas" e intensificar la búsqueda alrededor de estos espacios. 
+las soluciones "buenas" e intensificar la búsqueda alrededor de estos espacios.
 
 \begin{algorithm}
  \DontPrintSemicolon
@@ -473,7 +473,7 @@ las soluciones "buenas" e intensificar la búsqueda alrededor de estos espacios.
 
 Es un algoritmo evolutivo que genera su población inicial de manera aleatoria y
 con un tamaño mayor o igual a 4. Suele utilizarse para problemas de optimización
-contínuos pues cada individuo tiene componentes con números reales.\\ 
+contínuos pues cada individuo tiene componentes con números reales.\\
 
 El operador de cruce que utiliza está basado en la combinación líneal de las
 soluciones utilizando la distancia entre las mismas. Dado un padre $x$ y tres
@@ -481,21 +481,21 @@ otro individuos seleccionados aleatoriamente $r1, r2$ y $r3$, se crea un nuevo
 vector $u = r1 + F(r2 - r3)$. $F$ representa un factor permite añadir un peso o
 importancia a la diferencia entre $r2$ y es tal que $r3$ y $F \in (0, 1)$
 \cite{Glover_2003}. Finalmente se reemplaza $p$, con $p'$, de la
-siguiente manera: 
+siguiente manera:
 
 \[
-p'_i = 
+p'_i =
   \begin{cases}
     u_i & \text{si } rand < CR\\
-    p_i & \text{si } rand \geq CR 
-  \end{cases} 
+    p_i & \text{si } rand \geq CR
+  \end{cases}
 \]
 
-donde: 
+donde:
 \begin{itemize}
   \item $CR \in (0,1)$ : \textit{Crossover Constant}, un parámetro que
   representa la probabilidad de cruce.
-  \item $rand$ : el número aleatorio entre 0 y 1 para escoger un componente u 
+  \item $rand$ : el número aleatorio entre 0 y 1 para escoger un componente u
   otro.
   \item $1 \leq i \leq n $ : índice para cada característica.
 \end{itemize}
@@ -533,14 +533,14 @@ donde:
 
 \section{Implementación}
 
-Para desarrollar las metaheurísticas y algoritmos explicados anteriormente y 
-obtener los resultados se utilizó en lenguaje de programación C++ que se 
+Para desarrollar las metaheurísticas y algoritmos explicados anteriormente y
+obtener los resultados se utilizó en lenguaje de programación C++ que se
 caracteriza por ser altamente eficiente.\\
 
 En cuanto a la implementación de 1-NN, se retorna el porcentaje de instancias
-clasificadas correctamente para el conjunto de datos dado y el cálculo de la 
-cercanía entre dos instancias se realiza utilizando la fórmula de distancia 
-euclideana pesada con la importancia de cada caraterística: 
+clasificadas correctamente para el conjunto de datos dado y el cálculo de la
+cercanía entre dos instancias se realiza utilizando la fórmula de distancia
+euclideana pesada con la importancia de cada caraterística:
 $$\sqrt{\sum_{i=1}^n (w_i * (x_i - x'_i))^{2}}$$
 
 Para modelar la solución al problema planteado se utilizó un vector de números
@@ -555,29 +555,29 @@ $$w_{posToChange}' =  w_{posToChange} + rand$$
     w_{posToChange}' = 0 & \text{si } w_{posToChange}' < 0\\
     normalizar(W')       & \text{si } w_{posToChange}' \geq 1\\
     W'                   & \text{de lo contrario}
-  \end{cases} 
+  \end{cases}
 \]
 
 Con respecto a las metaheurísticas, el criterio para seleccionar el mejor vecino
-es "el mejor de una porción" ya que el "mejor" de todos no era factible puesto 
-que los vecinos de una solución específica son infinitos. Se utilizaron dos 
-criterios de convergencia: "cantidad fija de iteraciones" y "cantidad de 
-iteraciones sin cambios". A continuación se específica el criterio de 
+es "el mejor de una porción" ya que el "mejor" de todos no era factible puesto
+que los vecinos de una solución específica son infinitos. Se utilizaron dos
+criterios de convergencia: "cantidad fija de iteraciones" y "cantidad de
+iteraciones sin cambios". A continuación se específica el criterio de
 convergencia de las metaherísticas implementadas:
 
 \begin{itemize}
-  \item Local Search : Cantidad fija de iteraciones. Si la mejor solución no 
+  \item Local Search : Cantidad fija de iteraciones. Si la mejor solución no
   varía después de dos iteraciones se considera que hubo convergencia.
   \item Iterated Local Search : Cantidad de iteraciones sin cambios.
-  \item Simulated Annealing: Cantidad fija de iteraciones. Si la mejor solución 
+  \item Simulated Annealing: Cantidad fija de iteraciones. Si la mejor solución
   no varía después de dos iteraciones se considera que hubo convergencia
   \item Scatter Search: ambas.
   \item Differential Evolution: ambas.
 \end{itemize}
 
-Como método de perturbación de una solución se utilizó la idea para generar un 
-vecino pero no se modifica una posición del vector sino dos; esto se realiza 
-para aquellas metaheurísticas en las que se requiere un operador de vecidad 
+Como método de perturbación de una solución se utilizó la idea para generar un
+vecino pero no se modifica una posición del vector sino dos; esto se realiza
+para aquellas metaheurísticas en las que se requiere un operador de vecidad
 más amplio como ILS.\\
 
 Simulated Annealing es uno de los algoritmos implementados que posee más sutilezas y variaciones; requiere que se planifique el enfriamiento (\textit{Cooling Schedule}). Para alcanzar el estado de equilibrio (en donde no se varía la temperatura) se realiza un número de transiciones estáticas en las que se fijó una cantidad de iteraciones. Existen diversas funciones para disminuir la temperatura, en este caso se utilizó una función logaritmica que decrece según el número de iteraciones $i$: $$\frac{T_{inicial}}{\log(i)}$$
@@ -599,34 +599,34 @@ Para obtener el subconjunto de entrenamiento y el de pruebas para un conjunto de
 
 Con la expansión del área de Inteligencia Artificial, se ha convertido en una
 necesidad contar con bases de datos que proporcionen información que permita a
-los investigadores, educadores y estudiantes del área realizar análisis sobre 
+los investigadores, educadores y estudiantes del área realizar análisis sobre
 los algoritmos de \textit{Machine Learning}. Una de las librerias más populares
 en la actualidad es UCI Machine Learning Repository, que mantiene una colección
-de conjuntos de datos, teorías de dominio y generadores de datos disponibles 
+de conjuntos de datos, teorías de dominio y generadores de datos disponibles
 para toda la comunidad.\\
 
 Para efectuar el análisis de las metaheurísticas a utilizar para resolver el
-problema APC se utilizan cuatro librerias disponibles en 
+problema APC se utilizan cuatro librerias disponibles en
 \href{http://archive.ics.uci.edu/ml/index.php}{UCI}:
 
 \begin{description}
   \item [Iris:] este es probablemente el conjunto de datos mejor conocido y citado
   en la literatura de reconocimiento de patrones. Contiene tres clases de 50
   instancias cada una, en donde cada clase corresponde a un tipo de planta Iris.
-  Cada instancia posee las siguientes características: largo del sépalo, ancho 
+  Cada instancia posee las siguientes características: largo del sépalo, ancho
   del sépalo, largo del pétalo y ancho del pétalo en centímetros. Las clases a
-  predecir son: "Iris-Setosa", "Iris-Versicolor" e "Iris-Virginica". 
+  predecir son: "Iris-Setosa", "Iris-Versicolor" e "Iris-Virginica".
   \cite{UCI_Iris}.
-  
-  \item [Sonar:] es una base de datos de detección de materiales mediante señales 
-  de sónar que "rebotan" en los objetos desde diferentes ángulos y bajo 
+
+  \item [Sonar:] es una base de datos de detección de materiales mediante señales
+  de sónar que "rebotan" en los objetos desde diferentes ángulos y bajo
   condiciones varias, discriminando entre cilindros metálicos(\textit{mines}) y
   rocas(\textit{rocks}). Cuenta con 111 \textit{mines} y 97 \textit{rocks} donde
   cada instancia es un conjunto de 60 números entre 0.0 y 1.0 que representan la
-  energía entre una banda en particular, integrada sobre un periodo dispuestas 
+  energía entre una banda en particular, integrada sobre un periodo dispuestas
   en orden cresciente según el ángulo. Las clases a predecir son: "R"
   (\textit{rocks}) y "M" (\textit{mines}). \cite{UCI_Sonar}.
-   
+
   \item [Winsconsin Diagnostic Breast Cancer:] es una base de datos contiene
   atributos calculados a partir de una imagen digitalizada de una aspiración con
   aguja fina de una masa en la mama. Se describen las características de los
@@ -642,21 +642,21 @@ problema APC se utilizan cuatro librerias disponibles en
   donde los primeros 48 corresponden al porcentaje de frecuencia de una palabra
   en particular en un correo, 6 corresponden al porcentaje de frecuencia de
   símbolos de puntuación y las últimas 3 son el promedio, máximo y la suma de la
-  cantidad de letras en mayúsculas. Las clases a predecir son: 1 (spam), 0 
+  cantidad de letras en mayúsculas. Las clases a predecir son: 1 (spam), 0
   (non-spam) que representan \cite{UCI_SpamBase}.
-  
+
   \item [Waveform:] contiene datos de ondas que fueron generadas con un programa
-  en C. Dispone de 5000 instancias, 40 atributos con valores contínuos entre 
-  [0, 6], y 3 clases de ondas que represetan la característica a predecir. 
+  en C. Dispone de 5000 instancias, 40 atributos con valores contínuos entre
+  [0, 6], y 3 clases de ondas que represetan la característica a predecir.
   \cite{UCI_Waveform}.
-  
+
 \end{description}
 
 %--------------------- PARTICIONAMIENTO DE LOS DATOS --------------------------%
 
 \subsection{Particionamiento de los datos}
 
-Los conjuntos de datos mencionados anteriormente fueron particionados en dos subconjuntos: entrenamiento y prueba; se utilizó el 60\% y 40\% de los datos respectivamente. Cuando se analiza el comportamiento de una metaheurística probabilística, se desearía que el resultado obtenido no estuviera sesgado por una secuencia aleatoria concreta que pueda influir positiva o negativamente en las decisiones tomadas durante su ejecución. Para minimizar el impacto de esto, se realizaron varias particiones utilizando diferentes semillas para desordenar los datos. 
+Los conjuntos de datos mencionados anteriormente fueron particionados en dos subconjuntos: entrenamiento y prueba; se utilizó el 60\% y 40\% de los datos respectivamente. Cuando se analiza el comportamiento de una metaheurística probabilística, se desearía que el resultado obtenido no estuviera sesgado por una secuencia aleatoria concreta que pueda influir positiva o negativamente en las decisiones tomadas durante su ejecución. Para minimizar el impacto de esto, se realizaron varias particiones utilizando diferentes semillas para desordenar los datos.
 
 %----------------------- DESCRIPCIÓN DEL EXPERIMENTO --------------------------%
 
@@ -664,12 +664,12 @@ Los conjuntos de datos mencionados anteriormente fueron particionados en dos sub
 
 Se realizaron dos tipos de experimentos. El primero de ellos consistió en utilizar diferentes parámetros para cada una de las metaheurísticas  y con sólo dos particiones, con el objetivo de encontrar los parámetros más adecuados (entre los probados) para cada uno de los conjuntos de datos. En las tablas 1-45 se encuentran los resultados del promedio de las corridas.\\
 
-El segundo experimento se basa en los mejores parámetros obtenidos según los resultados promedio del primero y se realizan 5 particiones en las que se obtiene la media. En las tablas 46-100 se encuentran los resultados. En concreto, se consideraron los siguientes vectores de pesos (solución): 
+El segundo experimento se basa en los mejores parámetros obtenidos según los resultados promedio del primero y se realizan 5 particiones en las que se obtiene la media. En las tablas 46-100 se encuentran los resultados. En concreto, se consideraron los siguientes vectores de pesos (solución):
 
 \begin{itemize}
   \item Sin pesos: todas las características tienen el mismo peso (igual a 1).
   \item Relief: el resultado de ejecutar el algoritmo Relief.
-  \item ILS aleatorio: el resultado de ejecutar Iterated Local Search tomando 
+  \item ILS aleatorio: el resultado de ejecutar Iterated Local Search tomando
   como solución inicial un vector aleatorio.
   \item ILS relief: el resultado de ejecutar Iterated Local Search tomando como
   solución inicial el resultado de relief.
@@ -696,42 +696,42 @@ Los resultados de estos experimentos fueron obtenidos en una computadora portát
 
 Primeramente, se desea conocer que mejora supone el uso de Relief para guiar el aprendizaje del clasificador 1-NN, por esta razón se comparan los resultados obtenidos para cada conjunto de datos utilizando la heurística y "sin pesos", es decir, cada componente de $W$ es igual a 1.\\
 
-%\includegraphics[width=\columnwidth]{no_weights-Relief_Iris}
+\includegraphics[width=\columnwidth]{no_weights-Relief_Iris}
 Figura 1. Conjunto de datos: Iris. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.\\
 
-%\includegraphics[width=\columnwidth]{no_weights-Relief_Sonar}
+\includegraphics[width=\columnwidth]{no_weights-Relief_Sonar}
 Figura 2. Conjunto de datos: Sonar. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.\\
 
 En el caso del conjunto de datos Iris y Sonar (Figura 1 y 2), el porcentaje de aciertos obtenidos al excluir los pesos presentan una mejora poco significativa con respecto a Relief. La diferencia entre ellos es cercano al 2\% en promedio. \\
 
-%\includegraphics[width=\columnwidth]{no_weights-Relief_WDBC}
+\includegraphics[width=\columnwidth]{no_weights-Relief_WDBC}
 Figura 3. Conjunto de datos: WDBC. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.\\
 
-Para Wisconsin Diagnostic Breast Cancer Relief incrementa el promedio del porcentaje de aciertos en apróximadamente 6\% con respecto a "sin pesos"\\ 
+Para Wisconsin Diagnostic Breast Cancer Relief incrementa el promedio del porcentaje de aciertos en apróximadamente 6\% con respecto a "sin pesos"\\
 
-%\includegraphics[width=\columnwidth]{no_weights-Relief_Spambase}
+\includegraphics[width=\columnwidth]{no_weights-Relief_Spambase}
 Figura 4. Conjunto de datos: Spambase. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.\\
 
 En cuanto a Spambase es evidente que el uso de Relief perjudica la obtención de aciertos, esto se debe probablemente a que contiene datos muy dispersos con varios atributo igual a 0, lo que impide que la heurística diferencie claramente un clase de otra.\\
 
-%\includegraphics[width=\columnwidth]{no_weights-Relief_Waveform}
+\includegraphics[width=\columnwidth]{no_weights-Relief_Waveform}
 Figura 5. Conjunto de datos: Waveform. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.\\
 
 Se puede obeservar que el promedio de aciertos mejora con el uso de Relief en un 4\%. En general, la metaheurística proporciona buenos resultados para los conjuntos de datos utilizados en tiempos aceptables; alrededor de 1 segundo para los conjuntos considerados pequeños (Iris, Sonar y WDBC) y 5 segundos para los grandes (Spambase y Waveform).\\
 
-%\includegraphics[width=\columnwidth]{metaheuristicas_Iris}
+\includegraphics[width=\columnwidth]{metaheuristicas_Iris}
 Figura 6. Conjunto de datos: Iris. Comparación entre todas las metaheurísticas.
 
-%\includegraphics[width=\columnwidth]{metaheuristicas_Sonar}
+\includegraphics[width=\columnwidth]{metaheuristicas_Sonar}
 Figura 7. Conjunto de datos: Sonar. Comparación entre todas las metaheurísticas.
 
-%\includegraphics[width=\columnwidth]{metaheuristicas_WDBC}
+\includegraphics[width=\columnwidth]{metaheuristicas_WDBC}
 Figura 8. Conjunto de datos: WDBC. Comparación entre todas las metaheurísticas.
 
-%\includegraphics[width=\columnwidth]{metaheuristicas_Spambase}
+\includegraphics[width=\columnwidth]{metaheuristicas_Spambase}
 Figura 9. Conjunto de datos: Spambase. Comparación entre todas las metaheurísticas.
 
-%\includegraphics[width=\columnwidth]{metaheuristicas_Waveform}
+\includegraphics[width=\columnwidth]{metaheuristicas_Waveform}
 Figura 10. Conjunto de datos: Waveform. Comparación entre todas las metaheurísticas.
 
 %------------------------------------------------------------------------------%
@@ -755,7 +755,7 @@ Aquí concluyen.
 \begin{thebibliography}{99}
 
 \bibitem{UCI_Waveform}
-Breiman, L. (1988). UCI Machine Learning Repository 
+Breiman, L. (1988). UCI Machine Learning Repository
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/waveform/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
 
@@ -766,24 +766,24 @@ reduction in KDD: an experimental study.
 \newblock {\em IEEE Transaction on Evolutionary computation}, 2003.
 
 \bibitem{UCI_Iris}
-Fisher, R.A. (1988). UCI Machine Learning Repository 
+Fisher, R.A. (1988). UCI Machine Learning Repository
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/iris/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
 
 \bibitem{Glover_2003}
 Glover, F
-\newblock Handbook of metaheuristics. 
+\newblock Handbook of metaheuristics.
 \newblock {\em Operation resarch and management science}, 2003.
 
 \bibitem{Herrera_2017}
 Herrera, F.
-\newblock Metaheurísticas. 
+\newblock Metaheurísticas.
 \newblock {\em Seminario 2: Problemas de optimización con técnicas
-basadas en búsqueda local}, 2017. Disponible en: 
+basadas en búsqueda local}, 2017. Disponible en:
 \url{http://sci2s.ugr.es/sites/default/files/files/Teaching/GraduatesCourses/Metaheuristicas/Sem02-Problemas-BusquedaLocal-MHs-16-17.pdf}
 
 \bibitem{UCI_SpamBase}
-Hopkins, M. (1999). UCI Machine Learning Repository 
+Hopkins, M. (1999). UCI Machine Learning Repository
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
 
@@ -797,7 +797,7 @@ Mitchell, T.
 \newblock {\em From Book News, Inc}, 1997.
 
 \bibitem{UCI_Sonar}
-Sejnowski, T (año). UCI Machine Learning Repository 
+Sejnowski, T (año). UCI Machine Learning Repository
 \newblock [\url{http://archive.ics.uci.edu/ml/machine-learning-databases/undocumented/connectionist-bench/sonar/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
 
@@ -807,7 +807,7 @@ Talbi E.
 \newblock {\em University of Lille}, 2009.
 
 \bibitem{UCI_WDBC}
-Wolberg, W. (1995). UCI Machine Learning Repository 
+Wolberg, W. (1995). UCI Machine Learning Repository
 \newblock [\url{https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/}].
 \newblock Irvine, CA: University of California, School of Information and Computer Science.
 
@@ -836,7 +836,7 @@ Tabla 5. Conjunto de Datos: Iris, Algoritmo: SA aleatorio.
 Tabla 6. Conjunto de Datos: Iris, Algoritmo: SA relief.
 Tabla 7. Conjunto de Datos: Iris, Algoritmo: SS aleatorio.
 Tabla 8. Conjunto de Datos: Iris, Algoritmo: SS relief.
-Tabla 9. Conjunto de Datos: Iris, Algoritmo: DE. 
+Tabla 9. Conjunto de Datos: Iris, Algoritmo: DE.
 Tabla 10. Conjunto de Datos: Sonar, Algoritmo: LS aleatorio.
 Tabla 11. Conjunto de Datos: Sonar, Algoritmo: LS relief.
 Tabla 12. Conjunto de Datos: Sonar, Algoritmo: ILS aleatorio.
@@ -886,7 +886,7 @@ Tabla 52. Conjunto de Datos: Iris, Algoritmo: SA aleatorio.
 Tabla 53. Conjunto de Datos: Iris, Algoritmo: SA relief.
 Tabla 54. Conjunto de Datos: Iris, Algoritmo: SS aleatorio.
 Tabla 55. Conjunto de Datos: Iris, Algoritmo: SS relief.
-Tabla 56. Conjunto de Datos: Iris, Algoritmo: DE. 
+Tabla 56. Conjunto de Datos: Iris, Algoritmo: DE.
 Tabla 57. Conjunto de Datos: Sonar, Algoritmo: Sin pesos.
 Tabla 58. Conjunto de Datos: Sonar, Algoritmo: Relief.
 Tabla 59. Conjunto de Datos: Sonar, Algoritmo: LS aleatorio.
@@ -934,43 +934,43 @@ Tabla 100. Conjunto de Datos: Waveform, Algoritmo: DE.
 
 
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/iris/no_weights.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/sonar/no_weights.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/spambase/no_weights.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/wdbc/no_weights.csv}{}{\csvlinetotablerow}%
 %\\
 %RELIEF\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/iris/relief.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/sonar/relief.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/spambase/relief.csv}{}{\csvlinetotablerow}%
 %\\
 %\csvreader[
-%  respect all, 
+%  respect all,
 %  autotabular
 %  ]{statistics/wdbc/relief.csv}{}{\csvlinetotablerow}%
 
