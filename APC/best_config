@@ -1,0 +1,56 @@
+5
+iris no_weights
+iris relief
+iris LS_random 50 20
+iris LS_relief 50 20
+iris ILS_random 50 20 3
+iris ILS_relief 50 20 3
+iris SA_random 2 8 100 100
+iris SA_relief 2 8 100 100
+iris DE 2 5 0.5 0.7
+iris Scatter_random 10 10 6
+iris Scatter_relief 10 10 6
+sonar no_weights
+sonar relief
+sonar LS_random 250 150
+sonar LS_relief 250 150
+sonar ILS_random 250 150 3
+sonar ILS_relief 250 150 3
+sonar SA_random 250 4 50 100
+sonar SA_relief 250 4 50 100
+sonar DE 150 10 0.5 0.5
+sonar Scatter_random 250 10 8
+sonar Scatter_relief 250 10 8
+wdbc no_weights
+wdbc relief
+wdbc LS_random 50 30
+wdbc LS_relief 50 30
+wdbc ILS_random 50 30 3
+wdbc ILS_relief 50 30 3
+wdbc SA_random 40 4 100 100
+wdbc SA_relief 40 4 100 100
+wdbc DE 50 10 0.7 0.3
+wdbc Scatter_random 40 10 8
+wdbc Scatter_relief 40 10 8
+spambase no_weights
+spambase relief
+spambase LS_random 20 15
+spambase LS_relief 20 15
+spambase ILS_random 10 5 3
+spambase ILS_relief 10 5 3
+spambase SA_random 10 4 100 100
+spambase SA_relief 10 4 100 100
+spambase DE 15 5 0.7 0.3
+spambase Scatter_random 2 5 6
+spambase Scatter_relief 2 5 6
+waveform no_weights
+waveform relief
+waveform LS_random 15 10
+waveform LS_relief 15 10
+waveform ILS_random 2 3 4
+waveform ILS_relief 2 3 4
+waveform SA_random 2 2 100 100
+waveform SA_relief 2 2 100 100
+waveform DE 2 5 0.5 0.7
+waveform Scatter_random 2 5 2
+waveform Scatter_relief 2 5 2
