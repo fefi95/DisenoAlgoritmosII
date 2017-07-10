@@ -1,0 +1,232 @@
+wdbc SA_random
+maxIter, NumGen, temp, estable, Aciertos, Tiempo
+40, 4, 50, 50, 94.2731, 5.51484
+
+wdbc SA_relief
+maxIter, NumGen, temp, estable, Aciertos, Tiempo
+40, 4, 50, 50, 92.7313, 3.71789
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+2, 3, 3, 97.5, 0.004785
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+5, 4, 3, 98.3333, 0.0071715
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+10, 8, 3, 97.5, 0.012655
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 20, 3, 97.5, 0.0274945
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 3, 98.3333, 0.0988875
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+2, 3, 4, 96.6667, 0.005382
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+5, 4, 4, 97.5, 0.0080425
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+10, 8, 4, 97.5, 0.012986
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 20, 4, 97.5, 0.02956
+
+iris ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 4, 98.3333, 0.0989995
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+2, 3, 3, 97.5, 0.0053885
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+5, 4, 3, 96.6667, 0.0051565
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+10, 8, 3, 97.5, 0.013012
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 20, 3, 97.5, 0.0292025
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 3, 98.3333, 0.098646
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+2, 3, 4, 96.6667, 0.0053795
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+5, 4, 4, 97.5, 0.007907
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+10, 8, 4, 97.5, 0.011692
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 20, 4, 98.3333, 0.046873
+
+iris ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 4, 97.5, 0.103786
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 3, 86.747, 2.28754
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+250, 150, 3, 87.9518, 3.13248
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+350, 250, 3, 88.5542, 8.13329
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+500, 450, 3, 90.9639, 15.228
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 4, 88.5542, 2.61979
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+250, 150, 4, 88.5542, 6.75078
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+350, 250, 4, 89.759, 15.3779
+
+sonar ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+500, 450, 4, 89.759, 26.7255
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 3, 87.3494, 2.061
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+250, 150, 3, 89.1566, 7.7939
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+350, 250, 3, 86.747, 6.9156
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+500, 450, 3, 89.1566, 18.0198
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 4, 86.747, 3.67302
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+250, 150, 4, 87.9518, 6.02991
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+350, 250, 4, 88.5542, 11.7615
+
+sonar ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+500, 450, 4, 89.1566, 22.0724
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+15, 10, 3, 85.9031, 1.15754
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+40, 20, 3, 92.0705, 2.56184
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 30, 3, 93.8326, 11.8271
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 3, 92.0705, 8.72123
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 3, 95.815, 22.1244
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+15, 10, 4, 83.9207, 1.00091
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+40, 20, 4, 94.2731, 6.34678
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 30, 4, 94.7137, 13.0944
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 4, 94.9339, 16.9792
+
+wdbc ILS_random
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 4, 94.0529, 33.454
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+15, 10, 3, 90.0881, 0.883298
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+40, 20, 3, 92.2907, 2.38222
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 30, 3, 93.3921, 4.80675
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 3, 94.2731, 13.054
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 3, 95.5947, 21.625
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+15, 10, 4, 89.8678, 0.975982
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+40, 20, 4, 93.1718, 3.90625
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+50, 30, 4, 94.9339, 7.90409
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+100, 60, 4, 94.9339, 15.6325
+
+wdbc ILS_relief
+maxIter, NumGen, maxIterWC, Aciertos, Tiempo
+150, 80, 4, 95.5947, 21.9037
+
