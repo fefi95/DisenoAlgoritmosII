@@ -91,12 +91,12 @@ APC_Instance ILS_convergence(APC_Instance initial,
     double bestValue = solution.evaluate(trainingSet, testSet);
     double newValue;
     while (countIter != maxIterationsWithoutChange) {
-        solution = solution.perturbSolution();
+        solution = bestSol.perturbSolution(countIter+2);
         solution = localSearch(initial,
                                trainingSet,
                                testSet,
                                maxIterations,
-                               neighborsPerGen);
+                               neighborsPerGen);    
         newValue = solution.evaluate(trainingSet, testSet);
 
         // Keep current best solution
@@ -109,13 +109,10 @@ APC_Instance ILS_convergence(APC_Instance initial,
             ++countIter;
         }
 
-        std::cout << "oldValue = " << oldValue << " newValue = " << newValue << std::endl;
         oldValue = newValue;
         ++totallIter;
     }
 
-    std::cout << "total number of iterations: " << totallIter << std::endl;
-    bestSol.normalize();
     return bestSol;
 }
 
