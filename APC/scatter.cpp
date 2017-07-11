@@ -4,7 +4,7 @@
  *  @author : Erick Silva
  *  @author : Stefani Castellanos 11-11394
  *
- *  Simulated annealing function.
+ *  Scatter search function.
  */
 
 #ifndef SCATTER_SEARCH
@@ -23,13 +23,15 @@
 using namespace std;
 
 /**
- * Function that executes simulatedAnnealing given an initial instance
- *  uses boltz temperature.
+ * Function that executes executes a scatter search given an initial instance
  *
  * @params initial      : Initial good Instance obtained via greedy.
  * @params trainingSet  : the training set to be used in the KNN function.
  * @params testSet      : the test set to be used in the KNN function.
+ * @params popSize      : the size of the population in the reference set.
  * @params maxIterations: max iterations to use.
+ * @params maxIterationsWithoutChange : maximum iterations without change
+ *                                          before considering stabilization.
  *
  * @return The APC_instance with the best score it can find.
  * 
