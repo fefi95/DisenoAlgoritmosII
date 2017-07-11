@@ -29,6 +29,8 @@ using namespace std;
  * @params maxIterations: max iterations to use.
  * @params initialTemperature: temperature to begin the annealing with.
  * @params neighborsPerGen: max neighbors to generate each time.
+ * @params internalIterations : number of maximum iterations to stabilize per
+ *                                  temperature step.
  *
  * @return The APC_instance with the best score it can find.
  * 
