@@ -21,8 +21,8 @@
 using namespace std;
 
 /**
- * Function that executes simulatedAnnealing given an initial instance
- *  uses boltz temperature.
+ * Function that executes the differential evolution algorithm.
+ *   assumes a random engine has been set already under seed.hpp
  *
  * @params lengthInstance   : the legnth of the instance used.
  * @params trainingSet  : the training set to be used in the KNN function.
