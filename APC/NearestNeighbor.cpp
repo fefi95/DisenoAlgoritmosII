@@ -18,7 +18,6 @@
 
 using namespace std;
 
-
 /**
  * Function that calculates the euclidean distance between 2 vectors
  *  with assigned weights for each component (taking them as an array)
@@ -26,8 +25,9 @@ using namespace std;
  * @params inst1     : Vector 1 of the dataset
  * @params inst2     : Vector 2 of the dataset
  * @params nFeatures : Size of vectors, not checked to save time
+ * @params weights   : weights for each component
  *
- * @return : euclidean distance between the two vectors.
+ * @return : euclidean distance between the two vectors using the weights.
  */
 
 double weightedDistance(vector<double> &inst1, vector<double> &inst2, int nFeatures, vector<double> const &weights) {
@@ -40,14 +40,13 @@ double weightedDistance(vector<double> &inst1, vector<double> &inst2, int nFeatu
 }
 
 
-// NAIVE IMPLEMENTATION, IF THIS BECOMES A PROBLEM,
-// UPGRADE TO K-D TREE.
 /**
  * Function that performs the nearest neighbor classifier
  *  and returns percentage of correct classifications.
  *
  * @params trainingSet:  set used for training.
  * @params testSet   :   testing sets.
+ * @params weights   :   weights for each component of the instances.
  *
  * @return : percentage of test set classified correctly.
  */
