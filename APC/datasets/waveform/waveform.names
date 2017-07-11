@@ -11,7 +11,7 @@
      1. CART book (above):
         -- Optimal Bayes classification rate: 86% accuracy
         -- CART decision tree algorithm: 72%
-        -- Nearest Neighbor Algorithm: 38%
+        -- Nearest Neighbor Algorithm: 78%
            -- 300 training and 5000 test instances
 
 4. Relevant Information:
