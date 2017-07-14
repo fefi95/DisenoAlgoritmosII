@@ -8,6 +8,7 @@
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{csvsimple}
 \usepackage[none]{hyphenat}
+\usepackage{adjustbox}
 
 \graphicspath{{graphics/}}
 %-------------------------- Macros and Definitions ----------------------------%
@@ -46,17 +47,20 @@
 
 \begin{abstract}
 
-{\small Dado un conjunto de datos, se desea conocer que atributo es más
-importante que otro al momento de distingüir la clase a la que pertenece una
-instancia de otra. Esta es la problemática que plantea Aprendizaje de Pesos en
-Características. Se procederá a resolver utilizando cuatro metaheurísticas
-diferentes inicializadas de manera aleatoria o con un algoritmo que aprovecha la
-información de los datos para guiar la búsqueda en el espacio: Relief. Los
-mejores resultados serán aquellos que tengan una mejor relación calidad-tiempo
-para cada conjunto de datos considerado.\\
+{\small Dado un conjunto de datos, se está interesado en conocer que atributo es
+más relevante que otro al momento de distingüir la clase a la que pertenece una
+instancia de otra para un clasificador como K-NN. Esta es la problemática que
+plantea Aprendizaje de Pesos en Características. Se procederá a resolver
+utilizando cuatro metaheurísticas diferentes inicializadas de manera aleatoria o
+con un algoritmo que aprovecha la información de los datos para guiar la
+búsqueda en el espacio: Relief. Se realizará un estudio basado en la observación
+empírica, en donde se compararán los resultados obtenidos y se determinará cuál
+es el más apropiado para APC según mejor relación calidad-tiempo para cada
+conjunto de datos considerado.\\
 
 Palabras claves: Aprendizaje de Pesos en Características, Metaheurísticas,
 \textit{Machine Learning}}.
+
 \end{abstract}
 
 %------------------------------------------------------------------------------%
@@ -66,15 +70,15 @@ Palabras claves: Aprendizaje de Pesos en Características, Metaheurísticas,
 \section*{Introducción}
 
 Una de las preocupaciones más grandes del hombre ha sido crear información,
-analizarla y permitir que perdure en el tiempo. Al entrar en la tecnológica esta
-sed de conocimiento se ha afianzado y ha crecido.\\
+analizarla y permitir que perdure en el tiempo. Al entrar en la era tecnológica
+esta sed de conocimiento se ha afianzado y ha crecido.\\
 
 Actualmente, se maneja una gran cantidad de información, sin embargo, no toda es
 relevante para una aplicación especifica. Por esta razón ha surgido la necesidad
 de reducir el tamaño de los datos, pero ¿Cómo escoger la información de manera
 adecuada?. En Inteligencia Artificial y Minería de Datos esta ha sido una
 interrogante constante debido a que se desea evitar consumir demasiado tiempo
-procesando la información sin pérdida de precisión.\\
+procesando la información sin que ocasione pérdida de precisión.\\
 
 Reducir el tamaño de los datos es posible a través de los siguientes métodos:
 
@@ -88,27 +92,27 @@ Reducir el tamaño de los datos es posible a través de los siguientes métodos:
   procesamiento.\cite{Cano_2003}
 \end{itemize}
 
-Este trabajo se enfocará en esta última, este problema de optimización  lleva el
-nombre de Aprendizaje de Pesos en Características. Usualmente, ponderar los
-atributos para mejorar la tasa de aciertos de un clasificador hace uso de Redes
-Neurales, sin embargo estas pueden consumir demasiado tiempo. Se utilizará un
-algoritmo \textit{greedy} (ávido) denominado Relief, dos metaheurísticas de
-trayectoría y dos poblacionales, para compararlas y determinar cuál de ellos es
-más adecuado para el problema.\\
+El presente artículo se enfocará en esta última, un problema de optimización
+lleva el nombre de Aprendizaje de Pesos en Características. Usualmente, ponderar
+los atributos para mejorar la tasa de aciertos de un clasificador es una tarea
+para Redes Neurales, sin embargo estas pueden consumir demasiado tiempo. Se
+utilizará un algoritmo \textit{greedy} (ávido) denominado Relief, dos
+metaheurísticas de trayectoría y dos poblacionales, para compararlas y
+determinar cuál de ellos es más adecuado para el problema.\\
 
 Es indispensable contar con varios conjuntos de datos que permitan realizar la
 fase experimental y así concretar los resultados. En este caso, fueron
-seleccionados cinco: Iris, Sonar, WDBC, Spambase y Waveform. El primero
-constituye un conjunto pequeño, los siguientes dos son medianos y los últimos
-son consideradas problemas con gran cantidad de datos.\\
+seleccionados cinco: Iris, Sonar, Wisconsin Diagnostic Breast Cancer, Spambase y
+Waveform. El primero constituye un conjunto pequeño, los siguientes dos son
+medianos y los últimos son consideradas problemas con gran cantidad de datos.\\
 
-Primeramente se realizará la descripción del problema en términos matemáticos y
+Primeramente, se realizará la descripción del problema en términos matemáticos y
 se explicará en que consiste el clasificador utilizado. Luego, se detallará el
 funcionamiento del algoritmo Relief y las metaheurísticas Iterated Local Search,
 Simulated Annealing, Scatter Search y Differential Evolution. Se ofrecerán
 resultados de acuerdos a los experimentos realizados para cada algoritmo con
-cada conunto de datos. Finalmente, se concluirá según lo analizado en la sección
-descrita anteriormente.
+cada conjunto de datos y finalmente, se concluirá según lo analizado en la
+sección descrita anteriormente.
 
 %------------------------------------------------------------------------------%
 %                          DESCRIPCIÓN DEL PROBLEMA                            %
@@ -579,18 +583,12 @@ $$\sqrt{\sum_{i=1}^n (w_i * (x_i - x'_i))^{2}}$$
 
 Para modelar la solución al problema planteado se utilizó un vector de números
 reales con doble precisión (\texttt{double}). El operador para generar vecinos
-selecciona un número aleatorio, $posToChange$, que representa que posición del
-vector  a modificar, luego se escoge otro número aleatorio $rand \in [-1, 1]$
-y se procede de la siguiente manera:
-$$w_{posToChange}' =  w_{posToChange} + rand$$
-\[
-  W' =
-  \begin{cases}
-    w_{posToChange}' = 0 & \text{si } w_{posToChange}' < 0\\
-    normalizar(W')       & \text{si } w_{posToChange}' \geq 1\\
-    W'                   & \text{de lo contrario}
-  \end{cases}
-\]
+selecciona un número aleatorio, digamos $posToChange$, que representa la
+posición del vector que se pretende modificar. A continuación se génera otro
+número aleatorio $rand \in [-1, 1]$ y se opera de la siguiente manera:
+$w_{posToChange}' =  w_{posToChange} + rand$. Finalmente, si el resultado de
+esta componente no se encuentra dentro de [0, 1] se procede a normalizar el
+vector solución.\\
 
 Con respecto a las metaheurísticas, el criterio para seleccionar el mejor vecino
 es "el mejor de una porción" ya que el "mejor" de todos no era factible puesto
@@ -701,7 +699,7 @@ problema APC se utilizan cuatro librerias disponibles en
 
   \item [Waveform:] contiene datos de ondas que fueron generadas con un programa
   en C. Dispone de 5000 instancias, 40 atributos con valores contínuos entre
-  [0, 6], y 3 clases de ondas que represetan la característica a predecir.
+  [0, 6], y 3 clases de ondas que representan la característica a predecir.
   \cite{UCI_Waveform}.
 
 \end{description}
@@ -792,93 +790,168 @@ porcentaje de aciertos en apróximadamente 6\% con respecto a "sin pesos"\\
 {\small Figura 4. Conjunto de datos: Spambase. Comparación entre 1-NN sin
 considerar pesos y con la heurística Relief.}\\
 
-En cuanto a Spambase es evidente que el uso de Relief perjudica la obtención de aciertos, esto se debe probablemente a que contiene datos muy dispersos con varios atributo igual a 0, lo que impide que la heurística diferencie claramente un clase de otra.
+En cuanto a Spambase es evidente que el uso de Relief perjudica la obtención de
+aciertos, esto se debe probablemente a que contiene datos muy dispersos con
+varios atributo igual a 0, lo que impide que la heurística diferencie claramente
+una clase de otra.
 
 \includegraphics[width=\columnwidth]{no_weights-Relief_Waveform}
-{\small Figura 5. Conjunto de datos: Waveform. Comparación entre 1-NN sin considerar pesos y con la heurística Relief.}\\
+{\small Figura 5. Conjunto de datos: Waveform. Comparación entre 1-NN sin
+considerar pesos y con la heurística Relief.}\\
 
-Se puede obeservar que el promedio de aciertos mejora con el uso de Relief en un 4\%. En general, la metaheurística proporciona buenos resultados para los conjuntos de datos utilizados en tiempos aceptables; alrededor de 1 segundo para los conjuntos considerados pequeños (Iris, Sonar y WDBC) y 5 segundos para los grandes (Spambase y Waveform).\\
+Se puede obeservar en la figura 5 que el promedio de aciertos para Waveform
+mejora con el uso de Relief en un 4\%. En general, la metaheurística proporciona
+buenos resultados para los conjuntos de datos utilizados en tiempos aceptables;
+alrededor de 1 segundo para los conjuntos considerados pequeños (Iris, Sonar y
+WDBC) y 5 segundos para los grandes (Spambase y Waveform).\\
 
-Con relación a las metaheurísticas, se realizaron ejecuciones de cada algoritmo con los párametros que se consideraron mejores según el primer experimento. Los resultados para Iris estos se obtuvieron con los siguientes parámetros:
+Con relación a las metaheurísticas, se realizaron ejecuciones de cada algoritmo
+con los párametros que se consideraron mejores según la observación empírica de
+los resultados recogidos del primer experimento. Para Iris se utilizaron los
+siguientes parámetros:
+
 \begin{itemize}
   \item LS: 50 iteraciones, 20 vecinos.
   \item ILS: 50 iteraciones, 20 vecinos, 3 iteraciones sin cambios.
-  \item SA: 2 iteraciones, 8 vecinos, 100 de temperatura inicial y 100 iteraciones de estabilización.
+  \item SA: 2 iteraciones, 8 vecinos, 100 de temperatura inicial y 100
+  iteraciones de estabilización.
   \item SS: 10 iteraciones, 10 tamaño de la población, 6 iteraciones sin cambios
-  \item DE: 2 iteraciones, 5 tamaño de la poblacion, 0.5 CR, 0.7 de Factor de Escalamiento.
+  \item DE: 2 iteraciones, 5 tamaño de la poblacion, 0.5 CR, 0.7 de Factor de
+  Escalamiento.
 \end{itemize}
 
 \includegraphics[width=\columnwidth]{metaheuristicas_Iris}
-{\small Figura 6. Conjunto de datos: Iris. Comparación entre todas las metaheurísticas.}\\
+{\small Figura 6. Conjunto de datos: Iris. Comparación entre todas las
+metaheurísticas.}\\
 
-Se puede observar en la Figura 6 que cualquier meteheurística permite clasificar con alta precisión, alredero de 97\%, los diferentes tipos de flores que componen a este conjunto de datos. Con respecto a las metaheurísticas de trayectoria, en ILS aleatorio se observa un resultado atípico puesto que una de las particiones consideradas permitió obtener un 100\% de aciertos. Por su parte, SA presenta resultados (99\% en promedio) similares, sin importar como se inicialice la solución que se optimizará.\\
+Se puede observar en la Figura 6 que cualquier meteheurística permite clasificar
+con alta precisión, alrededor de 97\%, los diferentes tipos de flores que
+componen a este conjunto de datos. Con respecto a las metaheurísticas de
+trayectoria, en ILS aleatorio se observa un resultado atípico puesto que una de
+las particiones consideradas permitió obtener un 100\% de aciertos. Por su parte,
+SA presenta resultados (99\% en promedio) similares, sin importar como se
+inicialice la solución que se optimizará.\\
 
-Las metaheurísticas de trayectoria no varían de manera importante con respecto a las anteriores, sin embargo, DE converge más rápidamente por lo que su precesión es cerca de 2\% peor a las demás. En cuanto al tiempo, ninguna sobrepasa los 0.5 segundos. La mejor de todas es Simulated Annealing con Relief ya que su tiempo es menor al de Scatter Search y obtienen los mismos reultados en promedio.\\
+Las metaheurísticas de trayectoria no varían de manera importante con respecto a
+las anteriores, sin embargo, DE converge más rápidamente por lo que su precesión
+es cerca de 2\% peor a las demás. En cuanto al tiempo, ninguna sobrepasa los 0.5
+segundos. La mejor de todas es Simulated Annealing con Relief ya que su tiempo es
+un poco menor al de Scatter Search y obtienen los mismos reultados en promedio.\\
 
 Para el conjunto de datos Sonar se utilizaron los siguientes parámetros:
 \begin{itemize}
   \item LS: 250 iteraciones, 150 vecinos.
   \item ILS: 250 iteraciones, 150 vecinos, 3 iteraciones sin cambios.
-  \item SA: 250 iteraciones, 4 vecinos, 50 de temperatura inicial y 100 iteraciones de estabilización.
-  \item SS: 250 iteraciones, 10 tamaño de la población, 8 iteraciones sin cambios
-  \item DE: 150 iteraciones, 10 tamaño de la poblacion, 0.5 CR, 0.5 de Factor de Escalamiento.
+  \item SA: 250 iteraciones, 4 vecinos, 50 de temperatura inicial y 100
+  iteraciones de estabilización.
+  \item SS: 250 iteraciones, 10 tamaño de la población, 8 iteraciones sin
+  cambios
+  \item DE: 150 iteraciones, 10 tamaño de la poblacion, 0.5 CR, 0.5 de Factor de
+  Escalamiento.
 \end{itemize}
 
 \includegraphics[width=\columnwidth]{metaheuristicas_Sonar}
-{\small Figura 7. Conjunto de datos: Sonar. Comparación entre todas las metaheurísticas.}\\
+{\small Figura 7. Conjunto de datos: Sonar. Comparación entre todas las
+metaheurísticas.}\\
 
-Sobre las metaheurísticas de trayectoria, SA es indiscutiblemente mejor a ILS y puesto que supera el promedio por apróximadamente 4\% en prácticamente el mismo tiempo de ejecución. También es mejor que LS por 7\% a pesar de que el tiempo que toma es mayor: 3 segundos de diferencia.\\
+Sobre las metaheurísticas de trayectoria, SA es indiscutiblemente mejor a ILS y
+puesto que supera el promedio por apróximadamente 4\% en prácticamente el mismo
+tiempo de ejecución. También es mejor que LS por 7\% a pesar de que el tiempo
+que toma es mayor: 3 segundos de diferencia.\\
 
-Es difícil definir claramente cuál de las dos metaheurísticas poblacionales presentan mejores resultados debido a que SS supera a DE en un 3\% pero su tiempo de ejecución es el triple. La mejora de Simulated Annealing con respecto a Scatter Search es del 3\%, sin embargo tarda 3 segundos más, por lo que se considera mejor SS.
+Es difícil definir claramente cuál de las dos metaheurísticas poblacionales
+presentan mejores resultados debido a que SS supera a DE en un 3\% pero su
+tiempo de ejecución es el triple. La mejora de Simulated Annealing con respecto
+a Scatter Search es del 3\%, sin embargo tarda 3 segundos más, por lo que se
+considera mejor SS.\\
 
 Para el conjunto de datos Winsconsin Diagnostic Breast Cancer se utilizaron los siguientes parámetros:
 \begin{itemize}
   \item LS: 50 iteraciones, 30 vecinos.
   \item ILS: 50 iteraciones, 30 vecinos, 3 iteraciones sin cambios.
-  \item SA: 40 iteraciones, 4 vecinos, 100 de temperatura inicial y 100 iteraciones de estabilización.
+  \item SA: 40 iteraciones, 4 vecinos, 100 de temperatura inicial y 100
+  iteraciones de estabilización.
   \item SS: 40 iteraciones, 10 tamaño de la población, 8 iteraciones sin cambios
-  \item DE: 50 iteraciones, 10 tamaño de la poblacion, 0.7 CR, 0.3 de Factor de Escalamiento.
+  \item DE: 50 iteraciones, 10 tamaño de la poblacion, 0.7 CR, 0.3 de Factor de
+  Escalamiento.
 \end{itemize}
 
 \includegraphics[width=\columnwidth]{metaheuristicas_WDBC}
-{\small Figura 8. Conjunto de datos: WDBC. Comparación entre todas las metaheurísticas.}\\
+{\small Figura 8. Conjunto de datos: WDBC. Comparación entre todas las
+metaheurísticas.}\\
 
-La metehaurística de trayectoria que determina con mayor certeza si una mujer tiene o no cáncer de mama según el conjunto de datos es SA, ya que muestra una tasa de aciertos de apróximadamente 94\% y los resultados se obtuvieron en un tiempo relativamente corto, de 5 segundos apóximadamente. ILS presenta un porcentaje mayo de errores, además consume más tiempo.
+La metehaurística de trayectoria que determina con mayor certeza si una mujer
+tiene o no cáncer de mama según el conjunto de datos es SA con relief, ya que
+muestra una tasa de aciertos de apróximadamente 94\% y los resultados se
+obtuvieron en un tiempo relativamente corto, de 5 segundos apóximadamente. ILS
+presenta un porcentaje mayor de errores, además consume más tiempo
+(apróximadamente un segundo).\\
 
-En este caso SS tarda 4 veces más que DE y en promedio obtiene un 2\% más de aciertos, por lo que DE es más apropiado para este problema; sin embargo Simulated Annealing con Relief es claramente superior, tanto en calidad como en tiempo.
+En este caso SS tarda 4 veces más que DE y en promedio obtiene un 2\% más de
+aciertos, por lo que DE es más apropiado; sin embargo Simulated Annealing con
+Relief es claramente superior, tanto en calidad como en tiempo.\\
 
-Spambase fue la instancia más complicada de clasificar y que consumió más tiempo por lo que en el experimento 1 se realizaron menos pruebas; se escogieron los siguientes parámetros para cada metaheurística:
+Spambase fue la instancia más complicada de clasificar y que consumió más tiempo
+por lo que en el experimento 1 se realizaron menos pruebas; se escogieron los
+siguientes parámetros para cada metaheurística:
 
 \begin{itemize}
   \item LS: 20 iteraciones, 15 vecinos.
   \item ILS: 10 iteraciones, 5 vecinos, 3 iteraciones sin cambios.
-  \item SA: 10 iteraciones, 4 vecinos, 100 de temperatura inicial y 100 iteraciones de estabilización.
+  \item SA: 10 iteraciones, 4 vecinos, 100 de temperatura inicial y 100
+  iteraciones de estabilización.
   \item SS: 2 iteraciones, 5 tamaño de la población, 6 iteraciones sin cambios.
-  \item DE: 15 iteraciones, 5 tamaño de la poblacion, 0.7 CR, 0.3 de Factor de Escalamiento.
+  \item DE: 15 iteraciones, 5 tamaño de la poblacion, 0.7 CR, 0.3 de Factor de
+  Escalamiento.
 \end{itemize}
 
 \includegraphics[width=\columnwidth]{metaheuristicas_Spambase}
-{\small Figura 9. Conjunto de datos: Spambase. Comparación entre todas las metaheurísticas.}\\
+{\small Figura 9. Conjunto de datos: Spambase. Comparación entre todas las
+metaheurísticas.}\\
 
-En est problema particular, ninguna de las metaheurísticas inicializadas con Relief presentaron un incremento considerable en la cantidad de aciertos, por el contrario, disminuyeron. En cuanto a las metaheurísticas de trayectoria, LS fue la que obtuvo mejores resultados, 87\% en promedio, en la mitad del tiempo que SA.
+En este problema particular, ninguna de las metaheurísticas inicializadas con
+Relief presentaron un incremento considerable en la cantidad de aciertos, por el
+contrario, disminuyeron. En cuanto a las metaheurísticas de trayectoria, LS fue
+la que obtuvo mejores resultados, 87\% en promedio, en la mitad del tiempo que
+SA.\\
 
-DE supera el promedio de SS en un 4\% y de LS en 2\% en apróximadamente el mismo tiempo de cómputo que ambos, por lo que es el mejor para clasificar si un correo determinado es considerado "basura".
+DE supera el promedio de SS en un 4\% y de LS en 2\% en apróximadamente el mismo
+tiempo de cómputo que ambos, por lo que es el mejor para clasificar si un correo
+determinado es considerado "basura".\\
 
 Los resultados obtenidos para Waveform utilizaron los siguientes parámetros:
+
 \begin{itemize}
   \item LS: 15 iteraciones, 10 vecinos.
   \item ILS: 2 iteraciones, 3 vecinos, 4 iteraciones sin cambios.
-  \item SA: 2 iteraciones, 2 vecinos, 100 de temperatura inicial y 100 iteraciones de estabilización.
+  \item SA: 2 iteraciones, 2 vecinos, 100 de temperatura inicial y 100
+  iteraciones de estabilización.
   \item SS: 2 iteraciones, 5 tamaño de la población, 2 iteraciones sin cambios.
-  \item DE: 2 iteraciones, 5 tamaño de la poblacion, 0.5 CR, 0.7 de Factor de Escalamiento.
+  \item DE: 2 iteraciones, 5 tamaño de la poblacion, 0.5 CR, 0.7 de Factor de
+  Escalamiento.
 \end{itemize}
 
 \includegraphics[width=\columnwidth]{metaheuristicas_Waveform}
-{\small Figura 10. Conjunto de datos: Waveform. Comparación entre todas las metaheurísticas.}\\
+{\small Figura 10. Conjunto de datos: Waveform. Comparación entre todas las
+metaheurísticas.}\\
 
-Es evidente el algoritmo Relief mejora los resultados de las todas las metheurísticas de manera considerable, en promedio 6\% apróximadamente por el mismo tiempo de ejecución. A pesar de que ILS obtiene resultados un poco mejores que SA el tiempo que consume llegando a esta tasa de aciertos es más del triple que SA. Por otro lado, DE obtiene resultados con un 2\% más de errores que SS, sin embargo tarda casi 6 veces menos. Simulated Annealing con Relief es la metaheurística como mejor relación calidad-tiempo para el para clasificar los tres tipos de olas.
+Al analizar la figura 10 es evidente el algoritmo Relief mejora los resultados
+de las todas las metaheurísticas de manera considerable, en promedio 6\%
+apróximadamente por el mismo tiempo de ejecución. A pesar de que ILS obtiene
+resultados un poco mejores que SA el tiempo que consume llegando a esta tasa de
+aciertos es más del triple que SA. Por otro lado, DE obtiene resultados con un
+2\% más de errores que SS, sin embargo tarda casi 6 veces menos. Simulated
+Annealing con Relief es la metaheurística como mejor relación calidad-tiempo
+para el para clasificar los tres tipos de olas.\\
 
-Finalmente, es imperativo resaltar que ninguna de las metaheurísticas propuestas incrementa la tasa de aciertos de manera significativa con respecto al algoritmo Relief, a excepción de Spambase.
+En general, los vectores soluciones obtenidos no mostraban un atributo que fuese
+mucho más relevante que otro.\\
+
+Por último, es imperativo resaltar que ninguna de las metaheurísticas propuestas
+incrementa la tasa de aciertos en función del tiempo de manera significativa,
+con respecto al algoritmo Relief en los conjuntos de datos estudiados. En
+aquellos casos en los que la mejora es importante se encuentra que la
+diferencias de tiempos es grande, entre 5 y 15 veces más que Relief.
 
 %------------------------------------------------------------------------------%
 %                               CONCLUSIONES                                   %
@@ -886,18 +959,47 @@ Finalmente, es imperativo resaltar que ninguna de las metaheurísticas propuesta
 
 \section*{Conclusiones}
 
-Se exploraron cuatro metaheurísticas para resolver el problema de Aprendizaje de Pesos en Características, típicamente resuelto utilizando redes neurales. En este caso se utilizó el clasificador 1-NN y algún algoritmo que permita ponderar los atributos de un conjunto de datos dado.\\
+Se exploraron cuatro metaheurísticas para resolver el problema de Aprendizaje de
+Pesos en Características, el cual se resuelve típicamente utilizando algoritmos
+de Inteligencia Artificial como Redes Neurales. En este caso se utilizó el
+clasificador 1-NN y algún algoritmo que permita ponderar los atributos de un
+conjunto de datos dado.\\
 
-Las metaheurísticas consideradas incluyeron dos de trayectoria y dos poblacionales: Iterated Local Search, Simulated Annealing, Scatter Search y Differential Evolution. Adicionalmente se realizaron inicializaciones diferentes, primero se utilizó una solución generada aleatoriamnte y luego una creada con el algoritmo Relief.\\
+Las metaheurísticas consideradas incluyeron dos de trayectoria y dos
+poblacionales: Iterated Local Search, Simulated Annealing, Scatter Search y
+Differential Evolution. Adicionalmente se realizaron inicializaciones
+diferentes, primero se utilizó una solución generada aleatoriamnte y luego una
+creada con el algoritmo Relief.\\
 
-En términos generales, la metaheurística que presentó mejores resultados según su tiempo y calidad de la solución fue Simulated Annealing. Sin embargo, al analizar más profudamente los resultados, se puede notar que no constituye una mjora considerable con respecto a Relief.\\
+En términos generales, la metaheurística que presentó mejor calidad de la
+solución fue Simulated Annealing y la que posee mejor tiempo es Differential
+evolution. Sin embargo, al analizar más profudamente los resultados, se puede
+notar que no constituye una mejora considerable con respecto a Relief. No
+obstante, para determinar qué algoritmo es mejor para unos datos específicos hay
+considerar qué tan crítico es el mismo, por ejemplo, para WDBC se preferiría
+precisión por encima del tiempo ya que los datos representan la diferencia entre
+salvar la vida de alguien o no; para otros datos como Sonar, podría no ser tan
+relevante.\\
 
-Dadas las características de los conjuntos de datos estudiados, se puede concluir que el uso de alguna de las metaheurísticas propuestas está justificado cuando los datos son dispersos, puesto que Relief no genera una solución los suficientemente confiable.\\
+Dadas las características de los conjuntos de datos estudiados, se puede
+inferir que el uso de alguna de las metaheurísticas propuestas está justificado
+cuando los datos son dispersos, puesto que Relief no genera una solución los
+suficientemente confiable.\\
 
-Por otro lado, es necesario realizar más experimentos para lograr obtener una caracterización de los problemas. Una de los posibles experimentos a realizar es perturbar más la solución en aquellos algoritmos que así lo requieran, como ILS. Otro posible experimento sería modificar los valores del $\alpha$ en Blend Alpha Crossover y analizar como varían los resultados.\\
+Por otro lado, es necesario realizar más experimentos para lograr obtener una
+caracterización de los problemas. Una de los posibles experimentos a realizar es
+perturbar más la solución en aquellos algoritmos que así lo requieran, como ILS.
+Otra posible prueba sería modificar los valores del $\alpha$ en Blend Alpha
+Crossover y analizar como varían los resultados. Además, se propone llevar a
+cabo estos experimentos en un computador con mejores recursos, ya que los
+resultados podrían mejorar considerablemente.\\
 
-Por último, se propone llevar a cabo estos experimentos en un computador con mejores recursos, ya que los resultados podrían mejorar considerablemente.
-
+Finalmente, se debe mencionar que los algoritmos aquí implementados no hacen uso
+de información del problema (más allá de Relief), por lo que al avanzar en la
+búsqueda del máximo, no se tiene conocimiento de qué movimiento proporciona la
+mayor ganancia. Sería interesante intentar incluir en alguna de las
+metaheurísticas, información sobre las características matemáticas del problema,
+como el cálculo del gradiente para ayudar a guiar la búsqueda.
 
 %------------------------------------------------------------------------------%
 %                               BIBLIOGRAFÍA                                   %
@@ -978,9 +1080,8 @@ Wolberg, W. (1995). UCI Machine Learning Repository
 %------------------------------------------------------------------------------%
 
 \newpage
-\small
 \section*{Apéndice}
-
+\small
 \subsection*{Experimento 1}
 \csvreader[
   respect all,
@@ -996,39 +1097,49 @@ Tabla 1. Conjunto de Datos: Iris, Algoritmo: LS aleatorio.\\
 \\
 Tabla 2. Conjunto de Datos: Iris, Algoritmo: LS relief.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/experiments/ILS_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 3. Conjunto de Datos: Iris, Algoritmo: ILS aleatorio.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/experiments/ILS_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 4. Conjunto de Datos: Iris, Algoritmo: ILS relief.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 5. Conjunto de Datos: Iris, Algoritmo: SA aleatorio.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/experiments/SA_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 6. Conjunto de Datos: Iris, Algoritmo: SA relief.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/experiments/Scatter_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 7. Conjunto de Datos: Iris, Algoritmo: SS aleatorio.\\
 
 \csvreader[
@@ -1043,7 +1154,8 @@ Tabla 8. Conjunto de Datos: Iris, Algoritmo: SS relief.\\
   autotabular
   ]{statistics/iris/experiments/DE.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 9. Conjunto de Datos: Iris, Algoritmo: DE.\\
+Tabla 9. Conjunto de Datos: Iris, Algoritmo: DE.
+\newpage
 
 \csvreader[
   respect all,
@@ -1059,32 +1171,40 @@ Tabla 10. Conjunto de Datos: Sonar, Algoritmo: LS aleatorio.
 \\
 Tabla 11. Conjunto de Datos: Sonar, Algoritmo: LS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/sonar/experiments/ILS_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 12. Conjunto de Datos: Sonar, Algoritmo: ILS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/sonar/experiments/ILS_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 13. Conjunto de Datos: Sonar, Algoritmo: ILS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/sonar/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 14. Conjunto de Datos: Sonar, Algoritmo: SA aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/sonar/experiments/SA_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 15. Conjunto de Datos: Sonar, Algoritmo: SA relief.
 
 \csvreader[
@@ -1101,12 +1221,14 @@ Tabla 16. Conjunto de Datos: Sonar, Algoritmo: SS aleatorio.
 \\
 Tabla 17. Conjunto de Datos: Sonar, Algoritmo: SS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/sonar/experiments/DE.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 18. Conjunto de Datos: Sonar, Algoritmo: DE.
+\end{adjustbox}
+Tabla 18. Conjunto de Datos: Sonar, Algoritmo: DE.\\
 
 \csvreader[
   respect all,
@@ -1122,39 +1244,49 @@ Tabla 19. Conjunto de Datos: WDBC, Algoritmo: LS aleatorio.
 \\
 Tabla 20. Conjunto de Datos: WDBC, Algoritmo: LS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/wdbc/experiments/ILS_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 21. Conjunto de Datos: WDBC, Algoritmo: ILS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/wdbc/experiments/ILS_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 22. Conjunto de Datos: WDBC, Algoritmo: ILS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/wdbc/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 23. Conjunto de Datos: WDBC, Algoritmo: SA aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/wdbc/experiments/SA_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 24. Conjunto de Datos: WDBC, Algoritmo: SA relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/wdbc/experiments/Scatter_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 25. Conjunto de Datos: WDBC, Algoritmo: SS aleatorio.
 
 \csvreader[
@@ -1169,48 +1301,56 @@ Tabla 26. Conjunto de Datos: WDBC, Algoritmo: SS relief.
   autotabular
   ]{statistics/wdbc/experiments/DE.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 27. Conjunto de Datos: WDBC, Algoritmo: DE.
+Tabla 27. Conjunto de Datos: WDBC, Algoritmo: DE.\\
 
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/LS_random.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 28. Conjunto de Datos: Spambase, Algoritmo: LS aleatorio.
+Tabla 28. Conjunto de Datos: Spambase, Algoritmo: LS aleatorio.\\
 
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/LS_relief.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 29. Conjunto de Datos: Spambase, Algoritmo: LS relief.
+Tabla 29. Conjunto de Datos: Spambase, Algoritmo: LS relief.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/ILS_random.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 30. Conjunto de Datos: Spambase, Algoritmo: ILS aleatorio.
+\end{adjustbox}
+Tabla 30. Conjunto de Datos: Spambase, Algoritmo: ILS aleatorio.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/ILS_relief.csv}{}{\csvlinetotablerow}%
 \\
-Tabla 31. Conjunto de Datos: Spambase, Algoritmo: ILS relief.
+\end{adjustbox}
+Tabla 31. Conjunto de Datos: Spambase, Algoritmo: ILS relief.\\
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 32. Conjunto de Datos: Spambase, Algoritmo: SA aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/spambase/experiments/SA_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 33. Conjunto de Datos: Spambase, Algoritmo: SA relief.
 
 \csvreader[
@@ -1262,32 +1402,40 @@ Tabla 39. Conjunto de Datos: Waveform, Algoritmo: ILS aleatorio.
 \\
 Tabla 40. Conjunto de Datos: Waveform, Algoritmo: ILS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/waveform/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 41. Conjunto de Datos: Waveform, Algoritmo: SA aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/waveform/experiments/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 42. Conjunto de Datos: Waveform, Algoritmo: SA relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/waveform/experiments/Scatter_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 43. Conjunto de Datos: Waveform, Algoritmo: SS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/waveform/experiments/Scatter_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 44. Conjunto de Datos: Waveform, Algoritmo: SS relief.
 
 \csvreader[
@@ -1299,81 +1447,103 @@ Tabla 45. Conjunto de Datos: Waveform, Algoritmo: DE.
 
 \subsection*{Experimento 2}
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/no_weights.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 46. Conjunto de Datos: Iris, Algoritmo: Sin pesos.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 47. Conjunto de Datos: Iris, Algoritmo: Relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/LS_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 48. Conjunto de Datos: Iris, Algoritmo: LS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/LS_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 49. Conjunto de Datos: Iris, Algoritmo: LS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/ILS_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 50. Conjunto de Datos: Iris, Algoritmo: ILS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/ILS_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 51. Conjunto de Datos: Iris, Algoritmo: ILS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/SA_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 52. Conjunto de Datos: Iris, Algoritmo: SA aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/SA_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 53. Conjunto de Datos: Iris, Algoritmo: SA relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/Scatter_random.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 54. Conjunto de Datos: Iris, Algoritmo: SS aleatorio.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/Scatter_relief.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 55. Conjunto de Datos: Iris, Algoritmo: SS relief.
 
+\begin{adjustbox}{width=\columnwidth, center=\columnwidth}
 \csvreader[
   respect all,
   autotabular
   ]{statistics/iris/DE.csv}{}{\csvlinetotablerow}%
 \\
+\end{adjustbox}
 Tabla 56. Conjunto de Datos: Iris, Algoritmo: DE.
 
 \csvreader[
