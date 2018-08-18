@@ -74,6 +74,6 @@ Los boxplots se encuentran dentro del directorio /Paper/graphics/<nombre_dataset
 
 ## Paper
 
-Se encuentra en el archivo "Informe.pdf" con su correspondiente archivo escrito en LAteX
+Se encuentra en el archivo "[Informe.pdf](https://github.com/fefi95/DisenoAlgoritmosII/blob/master/Paper/Informe.pdf)" con su correspondiente archivo escrito en LAteX
 "Informe.tex". Para compilar el archivo, asegúrese de tener TeXLive 2016 o una versión
 superior.
